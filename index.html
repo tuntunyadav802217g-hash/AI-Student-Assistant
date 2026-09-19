@@ -5,33 +5,17 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Student Assistant - V5</title>
+    <title>AI Student Assistant - V6</title>
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -39,1058 +23,1092 @@
 <body>
 
 
-<!-- =========================================
-     HEADER
-========================================= -->
+    <!-- =========================================
+         HEADER
+    ========================================= -->
 
-<header class="header">
+    <header class="header">
 
-    <div class="logo">
+        <div class="logo">
 
-        🎓
+            🎓
 
-        <span>
-            AI Student Assistant
-        </span>
-
-    </div>
-
-
-    <div class="header-actions">
-
-        <button
-            id="themeButton"
-            class="theme-button"
-            onclick="toggleTheme()"
-        >
-            🌙
-        </button>
-
-    </div>
-
-</header>
-
-
-
-<!-- =========================================
-     NAVIGATION
-========================================= -->
-
-<nav class="navigation">
-
-    <button
-        class="nav-button active"
-        onclick="showSection('dashboardSection', this)"
-    >
-        🏠 Dashboard
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showSection('performanceSection', this)"
-    >
-        📊 Performance
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showSection('plannerSection', this)"
-    >
-        📅 Planner
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showSection('tasksSection', this)"
-    >
-        📝 Tasks
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showSection('attendanceSection', this)"
-    >
-        📚 Attendance
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showSection('profileSection', this)"
-    >
-        🧑‍🎓 Profile
-    </button>
-
-</nav>
-
-
-
-<!-- =========================================
-     MAIN
-========================================= -->
-
-<main class="container">
-
-
-<!-- =========================================
-     DASHBOARD SECTION
-========================================= -->
-
-<section
-    id="dashboardSection"
-    class="page-section active-section"
->
-
-
-    <!-- WELCOME -->
-
-    <div class="welcome">
-
-        <p class="small-title">
-            STUDENT DASHBOARD
-        </p>
-
-
-        <h1>
-
-            Welcome,
-
-            <span id="welcomeName">
-                Student
+            <span>
+                AI Student Assistant
             </span>
 
-            👋
-
-        </h1>
-
-
-        <p>
-            Manage your academic performance
-            and daily study routine.
-        </p>
-
-    </div>
-
-
-
-    <!-- QUICK STATS -->
-
-    <div class="stats-grid">
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                📊
-            </div>
-
-            <div>
-
-                <p>
-                    Average
-                </p>
-
-                <h3 id="percentageValue">
-                    0%
-                </h3>
-
-            </div>
-
         </div>
 
 
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                🏆
-            </div>
-
-            <div>
-
-                <p>
-                    Grade
-                </p>
-
-                <h3 id="gradeValue">
-                    -
-                </h3>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                📝
-            </div>
-
-            <div>
-
-                <p>
-                    Total Marks
-                </p>
-
-                <h3 id="totalValue">
-                    0/400
-                </h3>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                🎯
-            </div>
-
-            <div>
-
-                <p>
-                    Focus
-                </p>
-
-                <h3 id="weakSubjectValue">
-                    -
-                </h3>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- QUICK ACTIONS -->
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                ⚡
-            </div>
-
-            <div>
-
-                <h2>
-                    Quick Actions
-                </h2>
-
-                <p>
-                    Quickly access important features.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="quick-actions">
-
+        <div class="header-actions">
 
             <button
-                onclick="showSection('performanceSection')"
-                class="action-button"
+                id="themeButton"
+                class="theme-button"
+                onclick="toggleTheme()"
             >
-                📊
-                <span>
-                    Performance
-                </span>
-            </button>
-
-
-            <button
-                onclick="showSection('plannerSection')"
-                class="action-button"
-            >
-                📅
-                <span>
-                    Study Planner
-                </span>
-            </button>
-
-
-            <button
-                onclick="showSection('tasksSection')"
-                class="action-button"
-            >
-                📝
-                <span>
-                    Assignments
-                </span>
-            </button>
-
-
-            <button
-                onclick="showSection('profileSection')"
-                class="action-button"
-            >
-                🧑‍🎓
-                <span>
-                    Profile
-                </span>
+                🌙
             </button>
 
         </div>
-
-    </div>
-
-
-
-    <!-- AI RECOMMENDATION -->
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                🤖
-            </div>
-
-            <div>
-
-                <h2>
-                    AI Study Assistant
-                </h2>
-
-                <p>
-                    Personalized academic guidance.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div id="dashboardSuggestion">
-
-            <div class="empty-state">
-
-                📚
-
-                <p>
-                    Analyze your marks to receive
-                    personalized study advice.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-</section>
-
-
-
-<!-- =========================================
-     PERFORMANCE SECTION
-========================================= -->
-
-<section
-    id="performanceSection"
-    class="page-section"
->
-
-
-    <!-- INPUT -->
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                📝
-            </div>
-
-            <div>
-
-                <h2>
-                    Analyze Performance
-                </h2>
-
-                <p>
-                    Enter your latest marks.
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- NAME -->
-
-        <div class="form-group">
-
-            <label for="studentName">
-                Student Name
-            </label>
-
-            <input
-                type="text"
-                id="studentName"
-                placeholder="Enter your name"
-                maxlength="50"
-            >
-
-        </div>
-
-
-
-        <!-- SUBJECTS -->
-
-        <div class="subjects-grid">
-
-
-            <div class="form-group">
-
-                <label for="math">
-                    🧮 Mathematics
-                </label>
-
-                <input
-                    type="number"
-                    id="math"
-                    min="0"
-                    max="100"
-                    placeholder="0 - 100"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="python">
-                    🐍 Python
-                </label>
-
-                <input
-                    type="number"
-                    id="python"
-                    min="0"
-                    max="100"
-                    placeholder="0 - 100"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="dsa">
-                    💻 DSA
-                </label>
-
-                <input
-                    type="number"
-                    id="dsa"
-                    min="0"
-                    max="100"
-                    placeholder="0 - 100"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="physics">
-                    ⚛️ Physics
-                </label>
-
-                <input
-                    type="number"
-                    id="physics"
-                    min="0"
-                    max="100"
-                    placeholder="0 - 100"
-                >
-
-            </div>
-
-        </div>
-
-
-
-        <div class="button-group">
-
-            <button
-                class="primary-button"
-                onclick="calculateResult()"
-            >
-                🚀 Analyze Performance
-            </button>
-
-
-            <button
-                class="reset-button"
-                onclick="resetApp()"
-            >
-                🔄 Reset
-            </button>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- SUBJECT PERFORMANCE -->
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                📈
-            </div>
-
-            <div>
-
-                <h2>
-                    Subject Performance
-                </h2>
-
-                <p>
-                    Current marks for each subject.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div id="subjectPerformance">
-
-            <div class="empty-state">
-
-                📊
-
-                <p>
-                    Your performance will appear here.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- CHART -->
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                📊
-            </div>
-
-            <div>
-
-                <h2>
-                    Performance Chart
-                </h2>
-
-                <p>
-                    Visual comparison of your marks.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div
-            id="marksChart"
-            class="marks-chart"
-        ></div>
-
-    </div>
-
-
-
-    <!-- TARGETS -->
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                🎯
-            </div>
-
-            <div>
-
-                <h2>
-                    Subject Goals
-                </h2>
-
-                <p>
-                    Track your current marks against targets.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div
-            id="targetPerformance"
-            class="target-performance"
-        ></div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     PLANNER SECTION
-========================================= -->
-
-<section
-    id="plannerSection"
-    class="page-section"
->
-
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                📅
-            </div>
-
-            <div>
-
-                <h2>
-                    Today's Study Plan
-                </h2>
-
-                <p>
-                    Your plan is generated from your performance.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div id="studyPlan">
-
-            <div class="empty-state">
-
-                📅
-
-                <p>
-                    Analyze your marks first
-                    to generate your study plan.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- TIMER -->
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                ⏱️
-            </div>
-
-            <div>
-
-                <h2>
-                    Study Timer
-                </h2>
-
-                <p>
-                    Use a 25-minute focused study session.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="timer-box">
-
-            <div
-                id="timerDisplay"
-                class="timer-display"
-            >
-                25:00
-            </div>
-
-
-            <p id="timerStatus">
-                Ready to study
-            </p>
-
-
-            <div class="timer-buttons">
-
-                <button
-                    onclick="startTimer()"
-                    class="timer-start"
-                >
-                    ▶ Start
-                </button>
-
-
-                <button
-                    onclick="pauseTimer()"
-                    class="timer-pause"
-                >
-                    ⏸ Pause
-                </button>
-
-
-                <button
-                    onclick="resetTimer()"
-                    class="timer-reset"
-                >
-                    🔄 Reset
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     TASKS SECTION
-========================================= -->
-
-<section
-    id="tasksSection"
-    class="page-section"
->
-
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                📝
-            </div>
-
-            <div>
-
-                <h2>
-                    Assignment & Task Manager
-                </h2>
-
-                <p>
-                    Keep track of your academic tasks.
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="task-input-area">
-
-            <input
-                type="text"
-                id="taskInput"
-                placeholder="Enter assignment or task..."
-                maxlength="100"
-            >
-
-
-            <button
-                onclick="addTask()"
-                class="primary-button add-task-button"
-            >
-                ➕ Add Task
-            </button>
-
-        </div>
-
-
-        <div
-            id="taskList"
-            class="task-list"
-        ></div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     ATTENDANCE SECTION
-========================================= -->
-
-<section
-    id="attendanceSection"
-    class="page-section"
->
-
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                📚
-            </div>
-
-            <div>
-
-                <h2>
-                    Attendance Tracker
-                </h2>
-
-                <p>
-                    Enter attended and total classes.
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <div
-            id="attendanceList"
-            class="attendance-list"
-        ></div>
-
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     PROFILE SECTION
-========================================= -->
-
-<section
-    id="profileSection"
-    class="page-section"
->
-
-
-    <div class="card">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                🧑‍🎓
-            </div>
-
-            <div>
-
-                <h2>
-                    Student Profile
-                </h2>
-
-                <p>
-                    Store your basic academic information.
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="profile-grid">
-
-
-            <div class="form-group">
-
-                <label>
-                    Full Name
-                </label>
-
-                <input
-                    id="profileName"
-                    type="text"
-                    placeholder="Your name"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Course
-                </label>
-
-                <input
-                    id="profileCourse"
-                    type="text"
-                    placeholder="Example: CSE (AIML)"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Semester
-                </label>
-
-                <input
-                    id="profileSemester"
-                    type="text"
-                    placeholder="Example: 1st Semester"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Roll Number
-                </label>
-
-                <input
-                    id="profileRoll"
-                    type="text"
-                    placeholder="Enter roll number"
-                >
-
-            </div>
-
-        </div>
-
 
 
         <button
-            onclick="saveProfile()"
-            class="primary-button save-profile-button"
+            onclick="logoutUser()"
+            class="logout-btn"
         >
-            💾 Save Profile
+            🚪 Logout
+        </button>
+
+    </header>
+
+
+
+    <!-- =========================================
+         NAVIGATION
+    ========================================= -->
+
+    <nav class="navigation">
+
+        <button
+            class="nav-button active"
+            onclick="showSection('dashboardSection', this)"
+        >
+            🏠 Dashboard
         </button>
 
 
-        <div
-            id="profileMessage"
-            class="profile-message"
-        ></div>
-
-    </div>
-
-</section>
+        <button
+            class="nav-button"
+            onclick="showSection('performanceSection', this)"
+        >
+            📊 Performance
+        </button>
 
 
-
-<!-- =========================================
-     PROGRESS HISTORY
-========================================= -->
-
-<section
-    id="historySection"
-    class="page-section"
->
+        <button
+            class="nav-button"
+            onclick="showSection('plannerSection', this)"
+        >
+            📅 Planner
+        </button>
 
 
-    <div class="card">
+        <button
+            class="nav-button"
+            onclick="showSection('tasksSection', this)"
+        >
+            📝 Tasks
+        </button>
 
-        <div class="section-title">
 
-            <div class="section-icon">
-                📈
-            </div>
+        <button
+            class="nav-button"
+            onclick="showSection('attendanceSection', this)"
+        >
+            📚 Attendance
+        </button>
 
-            <div>
 
-                <h2>
-                    Progress History
-                </h2>
+        <button
+            class="nav-button"
+            onclick="showSection('profileSection', this)"
+        >
+            🧑‍🎓 Profile
+        </button>
+
+    </nav>
+
+
+
+    <!-- =========================================
+         MAIN
+    ========================================= -->
+
+    <main class="container">
+
+
+        <!-- =========================================
+             DASHBOARD SECTION
+        ========================================= -->
+
+        <section
+            id="dashboardSection"
+            class="page-section active-section"
+        >
+
+
+            <!-- WELCOME -->
+
+            <div class="welcome">
+
+                <p class="small-title">
+                    STUDENT DASHBOARD
+                </p>
+
+
+                <h1>
+
+                    Welcome,
+
+                    <span id="welcomeName">
+                        Student
+                    </span>
+
+                    👋
+
+                </h1>
+
 
                 <p>
-                    Your previous performance records.
+                    Manage your academic performance
+                    and daily study routine.
                 </p>
 
             </div>
 
-        </div>
 
 
-        <div
-            id="historyList"
-            class="history-list"
-        ></div>
+            <!-- QUICK STATS -->
 
-    </div>
-
-</section>
+            <div class="stats-grid">
 
 
+                <div class="stat-card">
 
-</main>
+                    <div class="stat-icon">
+                        📊
+                    </div>
 
+                    <div>
 
+                        <p>
+                            Average
+                        </p>
 
-<!-- =========================================
-     FOOTER
-========================================= -->
+                        <h3 id="percentageValue">
+                            0%
+                        </h3>
 
-<footer>
+                    </div>
 
-    <p>
-
-        🎓 AI Student Assistant
-
-        <span>
-            •
-        </span>
-
-        Version 5
-
-    </p>
-
-</footer>
+                </div>
 
 
 
-<script src="script.js"></script>
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🏆
+                    </div>
+
+                    <div>
+
+                        <p>
+                            Grade
+                        </p>
+
+                        <h3 id="gradeValue">
+                            -
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        📝
+                    </div>
+
+                    <div>
+
+                        <p>
+                            Total Marks
+                        </p>
+
+                        <h3 id="totalValue">
+                            0/400
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🎯
+                    </div>
+
+                    <div>
+
+                        <p>
+                            Focus
+                        </p>
+
+                        <h3 id="weakSubjectValue">
+                            -
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- QUICK ACTIONS -->
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        ⚡
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Quick Actions
+                        </h2>
+
+                        <p>
+                            Quickly access important features.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+
+                    <button
+                        onclick="showSection('performanceSection')"
+                        class="action-button"
+                    >
+                        📊
+                        <span>
+                            Performance
+                        </span>
+                    </button>
+
+
+                    <button
+                        onclick="showSection('plannerSection')"
+                        class="action-button"
+                    >
+                        📅
+                        <span>
+                            Study Planner
+                        </span>
+                    </button>
+
+
+                    <button
+                        onclick="showSection('tasksSection')"
+                        class="action-button"
+                    >
+                        📝
+                        <span>
+                            Assignments
+                        </span>
+                    </button>
+
+
+                    <button
+                        onclick="showSection('profileSection')"
+                        class="action-button"
+                    >
+                        🧑‍🎓
+                        <span>
+                            Profile
+                        </span>
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- AI RECOMMENDATION -->
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        🤖
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            AI Study Assistant
+                        </h2>
+
+                        <p>
+                            Personalized academic guidance.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div id="dashboardSuggestion">
+
+                    <div class="empty-state">
+
+                        📚
+
+                        <p>
+                            Analyze your marks to receive
+                            personalized study advice.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================================
+             PERFORMANCE SECTION
+        ========================================= -->
+
+        <section
+            id="performanceSection"
+            class="page-section"
+        >
+
+
+            <!-- INPUT -->
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        📝
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Analyze Performance
+                        </h2>
+
+                        <p>
+                            Enter your latest marks.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- NAME -->
+
+                <div class="form-group">
+
+                    <label for="studentName">
+                        Student Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="studentName"
+                        placeholder="Enter your name"
+                        maxlength="50"
+                    >
+
+                </div>
+
+
+
+                <!-- SUBJECTS -->
+
+                <div class="subjects-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="math">
+                            🧮 Mathematics
+                        </label>
+
+                        <input
+                            type="number"
+                            id="math"
+                            min="0"
+                            max="100"
+                            placeholder="0 - 100"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="python">
+                            🐍 Python
+                        </label>
+
+                        <input
+                            type="number"
+                            id="python"
+                            min="0"
+                            max="100"
+                            placeholder="0 - 100"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="dsa">
+                            💻 DSA
+                        </label>
+
+                        <input
+                            type="number"
+                            id="dsa"
+                            min="0"
+                            max="100"
+                            placeholder="0 - 100"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="physics">
+                            ⚛️ Physics
+                        </label>
+
+                        <input
+                            type="number"
+                            id="physics"
+                            min="0"
+                            max="100"
+                            placeholder="0 - 100"
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="button-group">
+
+                    <button
+                        class="primary-button"
+                        onclick="calculateResult()"
+                    >
+                        🚀 Analyze Performance
+                    </button>
+
+
+                    <button
+                        class="reset-button"
+                        onclick="resetApp()"
+                    >
+                        🔄 Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SUBJECT PERFORMANCE -->
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        📈
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Subject Performance
+                        </h2>
+
+                        <p>
+                            Current marks for each subject.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div id="subjectPerformance">
+
+                    <div class="empty-state">
+
+                        📊
+
+                        <p>
+                            Your performance will appear here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CHART -->
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Performance Chart
+                        </h2>
+
+                        <p>
+                            Visual comparison of your marks.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="marksChart"
+                    class="marks-chart"
+                ></div>
+
+            </div>
+
+
+
+            <!-- TARGETS -->
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        🎯
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Subject Goals
+                        </h2>
+
+                        <p>
+                            Track your current marks against targets.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="targetPerformance"
+                    class="target-performance"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             PLANNER SECTION
+        ========================================= -->
+
+        <section
+            id="plannerSection"
+            class="page-section"
+        >
+
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        📅
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Today's Study Plan
+                        </h2>
+
+                        <p>
+                            Your plan is generated from your performance.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div id="studyPlan">
+
+                    <div class="empty-state">
+
+                        📅
+
+                        <p>
+                            Analyze your marks first
+                            to generate your study plan.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- TIMER -->
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        ⏱️
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Study Timer
+                        </h2>
+
+                        <p>
+                            Use a 25-minute focused study session.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="timer-box">
+
+                    <div
+                        id="timerDisplay"
+                        class="timer-display"
+                    >
+                        25:00
+                    </div>
+
+
+                    <p id="timerStatus">
+                        Ready to study
+                    </p>
+
+
+                    <div class="timer-buttons">
+
+                        <button
+                            onclick="startTimer()"
+                            class="timer-start"
+                        >
+                            ▶ Start
+                        </button>
+
+
+                        <button
+                            onclick="pauseTimer()"
+                            class="timer-pause"
+                        >
+                            ⏸ Pause
+                        </button>
+
+
+                        <button
+                            onclick="resetTimer()"
+                            class="timer-reset"
+                        >
+                            🔄 Reset
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             TASKS SECTION
+        ========================================= -->
+
+        <section
+            id="tasksSection"
+            class="page-section"
+        >
+
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        📝
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Assignment & Task Manager
+                        </h2>
+
+                        <p>
+                            Keep track of your academic tasks.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="task-input-area">
+
+                    <input
+                        type="text"
+                        id="taskInput"
+                        placeholder="Enter assignment or task..."
+                        maxlength="100"
+                    >
+
+
+                    <button
+                        onclick="addTask()"
+                        class="primary-button add-task-button"
+                    >
+                        ➕ Add Task
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="taskList"
+                    class="task-list"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             ATTENDANCE SECTION
+        ========================================= -->
+
+        <section
+            id="attendanceSection"
+            class="page-section"
+        >
+
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        📚
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Attendance Tracker
+                        </h2>
+
+                        <p>
+                            Enter attended and total classes.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div
+                    id="attendanceList"
+                    class="attendance-list"
+                ></div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             PROFILE SECTION
+        ========================================= -->
+
+        <section
+            id="profileSection"
+            class="page-section"
+        >
+
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        🧑‍🎓
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Student Profile
+                        </h2>
+
+                        <p>
+                            Your account and academic information.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="profile-grid">
+
+
+                    <!-- FULL NAME -->
+
+                    <div class="form-group">
+
+                        <label for="profileName">
+                            Full Name
+                        </label>
+
+                        <input
+                            id="profileName"
+                            type="text"
+                            placeholder="Your name"
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="profileEmail">
+                            Email
+                        </label>
+
+                        <input
+                            id="profileEmail"
+                            type="email"
+                            placeholder="Your email"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <!-- COURSE -->
+
+                    <div class="form-group">
+
+                        <label for="profileCourse">
+                            Course
+                        </label>
+
+                        <input
+                            id="profileCourse"
+                            type="text"
+                            placeholder="Example: CSE (AIML)"
+                        >
+
+                    </div>
+
+
+                    <!-- SEMESTER -->
+
+                    <div class="form-group">
+
+                        <label for="profileSemester">
+                            Semester
+                        </label>
+
+                        <input
+                            id="profileSemester"
+                            type="text"
+                            placeholder="Example: 1st Semester"
+                        >
+
+                    </div>
+
+
+                    <!-- ROLL NUMBER -->
+
+                    <div class="form-group">
+
+                        <label for="profileRoll">
+                            Roll Number
+                        </label>
+
+                        <input
+                            id="profileRoll"
+                            type="text"
+                            placeholder="Enter roll number"
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <button
+                    onclick="saveProfile()"
+                    class="primary-button save-profile-button"
+                >
+                    💾 Save Profile
+                </button>
+
+
+                <div
+                    id="profileMessage"
+                    class="profile-message"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             PROGRESS HISTORY
+        ========================================= -->
+
+        <section
+            id="historySection"
+            class="page-section"
+        >
+
+
+            <div class="card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        📈
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Progress History
+                        </h2>
+
+                        <p>
+                            Your previous performance records.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="historyList"
+                    class="history-list"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+
+    </main>
+
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================= -->
+
+    <footer>
+
+        <p>
+
+            🎓 AI Student Assistant
+
+            <span>
+                •
+            </span>
+
+            Version 6
+
+        </p>
+
+    </footer>
+
+
+
+    <script src="script.js"></script>
 
 </body>
 

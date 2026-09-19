@@ -1,3 +1,11 @@
+// =====================================
+// 🔐 V6 DASHBOARD PROTECTION
+// =====================================
+
+if (localStorage.getItem("studentLoggedIn") !== "true") {
+    window.location.href = "login.html";
+}
+
 /* =========================================
    AI STUDENT ASSISTANT
    VERSION 5
@@ -655,17 +663,15 @@ function createTargets(marks) {
                     Current: ${mark}
                 </span>
 
-                <span class="${
-                    achieved
-                    ? "target-achieved"
-                    : "target-needed"
-                }">
+                <span class="${achieved
+                ? "target-achieved"
+                : "target-needed"
+            }">
 
-                    ${
-                        achieved
-                        ? "✓ Target Achieved"
-                        : `${target - mark} marks needed`
-                    }
+                    ${achieved
+                ? "✓ Target Achieved"
+                : `${target - mark} marks needed`
+            }
 
                 </span>
 
@@ -990,11 +996,10 @@ function loadTasks() {
                 <input
                     type="checkbox"
                     class="task-checkbox"
-                    ${
-                        task.completed
-                        ? "checked"
-                        : ""
-                    }
+                    ${task.completed
+                ? "checked"
+                : ""
+            }
                     onchange="
                         toggleTask(${task.id})
                     "
@@ -1002,11 +1007,10 @@ function loadTasks() {
 
                 <span
                     class="task-text
-                    ${
-                        task.completed
-                        ? "task-completed"
-                        : ""
-                    }"
+                    ${task.completed
+                ? "task-completed"
+                : ""
+            }"
                 >
                     ${escapeHTML(task.text)}
                 </span>
@@ -1153,9 +1157,9 @@ function loadAttendance() {
                     class="attendance-percent"
                 >
                     ${calculateAttendance(
-                        data.attended,
-                        data.total
-                    )}
+            data.attended,
+            data.total
+        )}
                 </span>
 
             </div>
@@ -1188,12 +1192,11 @@ function loadAttendance() {
                     id="attendanceFill${index}"
                     class="attendance-fill"
                     style="
-                        width: ${
-                            getAttendanceNumber(
-                                data.attended,
-                                data.total
-                            )
-                        }%;
+                        width: ${getAttendanceNumber(
+            data.attended,
+            data.total
+        )
+            }%;
                     "
                 ></div>
 
@@ -1357,138 +1360,185 @@ function saveAttendance(index) {
    PROFILE
 ========================================= */
 
+// =====================================
+// 👤 SAVE STUDENT PROFILE
+// =====================================
+
 function saveProfile() {
 
-    const name =
-        document.getElementById(
-            "profileName"
-        ).value.trim();
+    const profileName =
+        document.getElementById("profileName").value.trim();
+
+    const profileCourse =
+        document.getElementById("profileCourse").value.trim();
+
+    const profileSemester =
+        document.getElementById("profileSemester").value.trim();
+
+    const profileRoll =
+        document.getElementById("profileRoll").value.trim();
 
 
-    const course =
-        document.getElementById(
-            "profileCourse"
-        ).value.trim();
-
-
-    const semester =
-        document.getElementById(
-            "profileSemester"
-        ).value.trim();
-
-
-    const roll =
-        document.getElementById(
-            "profileRoll"
-        ).value.trim();
-
-
-    if (!name) {
-
-        alert(
-            "Please enter your name."
+    // Get logged-in account
+    const currentStudent =
+        JSON.parse(
+            localStorage.getItem("currentStudent")
         );
 
-        return;
 
+    if (!currentStudent) {
+
+        alert("Please login first. ❌");
+
+        return;
     }
 
 
-    const profile = {
+    // Create profile data
+    const profileData = {
 
-        name,
-        course,
-        semester,
-        roll
+        name: profileName || currentStudent.name,
 
+        email: currentStudent.email,
+
+        course: profileCourse,
+
+        semester: profileSemester,
+
+        roll: profileRoll
     };
 
 
+    // Save profile
     localStorage.setItem(
         "studentProfile",
-        JSON.stringify(profile)
+        JSON.stringify(profileData)
     );
 
 
-    /* Also update student name */
+    // Keep account name synchronized
+    currentStudent.name = profileData.name;
 
-    document.getElementById(
-        "studentName"
-    ).value = name;
-
-
-    document.getElementById(
-        "welcomeName"
-    ).textContent = name;
+    localStorage.setItem(
+        "currentStudent",
+        JSON.stringify(currentStudent)
+    );
 
 
-    const message =
-        document.getElementById(
-            "profileMessage"
-        );
+    // Update dashboard name
+    const welcomeName =
+        document.getElementById("welcomeName");
+
+    if (welcomeName) {
+
+        welcomeName.textContent =
+            profileData.name;
+    }
 
 
-    message.textContent =
-        "✓ Profile saved successfully.";
+    // Show message
+    const profileMessage =
+        document.getElementById("profileMessage");
 
+    if (profileMessage) {
 
-    setTimeout(() => {
+        profileMessage.textContent =
+            "Profile saved successfully! ✅";
 
-        message.textContent = "";
+        setTimeout(function () {
 
-    }, 3000);
+            profileMessage.textContent = "";
+
+        }, 3000);
+    }
+
 }
 
+// =====================================
+// 👤 LOAD STUDENT PROFILE
+// =====================================
 
 function loadProfile() {
 
-    const profile =
+    const savedProfile =
         JSON.parse(
-            localStorage.getItem(
-                "studentProfile"
-            )
+            localStorage.getItem("studentProfile")
         );
 
 
-    if (!profile) return;
+    const currentStudent =
+        JSON.parse(
+            localStorage.getItem("currentStudent")
+        );
 
 
-    document.getElementById(
-        "profileName"
-    ).value =
-        profile.name || "";
+    if (!savedProfile && !currentStudent) {
+        return;
+    }
 
 
-    document.getElementById(
-        "profileCourse"
-    ).value =
-        profile.course || "";
+    const profile =
+        savedProfile || {
+
+            name: currentStudent.name,
+
+            email: currentStudent.email,
+
+            course: "",
+
+            semester: "",
+
+            roll: ""
+        };
 
 
-    document.getElementById(
-        "profileSemester"
-    ).value =
-        profile.semester || "";
+    const profileName =
+        document.getElementById("profileName");
+
+    if (profileName) {
+
+        profileName.value =
+            profile.name || "";
+    }
 
 
-    document.getElementById(
-        "profileRoll"
-    ).value =
-        profile.roll || "";
+    const profileEmail =
+        document.getElementById("profileEmail");
+
+    if (profileEmail) {
+
+        profileEmail.value =
+            profile.email || "";
+    }
 
 
-    if (profile.name) {
+    const profileCourse =
+        document.getElementById("profileCourse");
 
-        document.getElementById(
-            "studentName"
-        ).value =
-            profile.name;
+    if (profileCourse) {
 
-        document.getElementById(
-            "welcomeName"
-        ).textContent =
-            profile.name;
+        profileCourse.value =
+            profile.course || "";
+    }
 
+
+    const profileSemester =
+        document.getElementById("profileSemester");
+
+    if (profileSemester) {
+
+        profileSemester.value =
+            profile.semester || "";
+    }
+
+
+    const profileRoll =
+        document.getElementById("profileRoll");
+
+    if (profileRoll) {
+
+        profileRoll.value =
+            profile.roll || "";
     }
 }
 
@@ -1970,7 +2020,7 @@ function loadSavedData() {
 
 document.addEventListener(
     "keydown",
-    function(event) {
+    function (event) {
 
         /* Ctrl + Enter = Analyze */
 
@@ -2011,7 +2061,7 @@ document.addEventListener(
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
+    function () {
 
         loadTheme();
 
@@ -2027,5 +2077,100 @@ document.addEventListener(
 
         updateTimerDisplay();
 
+        // V6
+        loadLoggedInStudent();
+
     }
 );
+
+// ======================================================
+// 🔐 V6 LOGIN PROTECTION
+// ======================================================
+
+const currentPage = window.location.pathname;
+
+if (
+    !currentPage.endsWith("login.html") &&
+    !currentPage.endsWith("signup.html")
+) {
+    const loggedIn =
+        localStorage.getItem("studentLoggedIn");
+
+    if (loggedIn !== "true") {
+        window.location.href = "login.html";
+    }
+}
+
+
+// ======================================================
+// 🚪 LOGOUT
+// ======================================================
+
+function logoutUser() {
+
+    const confirmLogout = confirm(
+        "Are you sure you want to logout?"
+    );
+
+    if (!confirmLogout) {
+        return;
+    }
+
+    // Login session remove
+    localStorage.removeItem("studentLoggedIn");
+
+    // Current session student remove
+    localStorage.removeItem("currentStudent");
+
+    // studentUser ko remove nahi karna
+    // taaki user dobara login kar sake
+
+    window.location.href = "login.html";
+}
+
+
+// ======================================================
+// 👤 LOAD LOGGED-IN STUDENT NAME
+// ======================================================
+
+function loadLoggedInStudent() {
+
+    const currentStudent =
+        JSON.parse(
+            localStorage.getItem("currentStudent")
+        );
+
+    if (!currentStudent) {
+        return;
+    }
+
+
+    // Dashboard welcome name
+    const welcomeName =
+        document.getElementById("welcomeName");
+
+    if (welcomeName) {
+        welcomeName.textContent =
+            currentStudent.name;
+    }
+
+
+    // Profile name
+    const profileName =
+        document.getElementById("profileName");
+
+    if (profileName) {
+        profileName.value =
+            currentStudent.name;
+    }
+
+
+    // Profile email
+    const profileEmail =
+        document.getElementById("profileEmail");
+
+    if (profileEmail) {
+        profileEmail.value =
+            currentStudent.email;
+    }
+}
