@@ -200,19 +200,19 @@ function saveStudyTargets() {
 function getPlannerInputs() {
 
     const subject =
-        document.getElementById("studySubject");
+        document.getElementById("plannerSubject");
 
     const topic =
-        document.getElementById("studyTopic");
+        document.getElementById("plannerTopic");
 
     const date =
-        document.getElementById("studyDate");
+        document.getElementById("plannerDate");
 
     const time =
-        document.getElementById("studyTime");
+        document.getElementById("plannerTime");
 
     const duration =
-        document.getElementById("studyDuration");
+        document.getElementById("plannerDuration");
 
 
     return {
@@ -235,102 +235,115 @@ function getPlannerInputs() {
     };
 }
 
-
 // ======================================================
 // 🎯 CREATE STUDY TARGET
 // ======================================================
 
-function createStudyTarget() {
+async function createStudyTarget() {
 
     const data =
         getPlannerInputs();
 
-
     if (!data.subject) {
-
-        alert(
-            "Please select a subject."
-        );
-
+        alert("Please select a subject.");
         return;
     }
-
 
     if (!data.topic) {
-
-        alert(
-            "Please enter a topic."
-        );
-
+        alert("Please enter a topic.");
         return;
     }
-
 
     if (!data.date) {
-
-        alert(
-            "Please select a study date."
-        );
-
+        alert("Please select a study date.");
         return;
     }
-
 
     if (!data.time) {
-
-        alert(
-            "Please select a start time."
-        );
-
+        alert("Please select a start time.");
         return;
     }
-
 
     if (!data.duration || data.duration <= 0) {
-
-        alert(
-            "Please select study duration."
-        );
-
+        alert("Please select study duration.");
         return;
     }
 
+    try {
 
-    const target = {
+        const response = await fetch(
+            `${LIBRARY_API_BASE_URL}/api/study/create/`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    subject: data.subject,
+                    topic: data.topic,
+                    date: data.date,
+                    time: data.time,
+                    duration: data.duration,
+                    status: "Pending"
+                })
+            }
+        );
 
-        id:
-            Date.now(),
+        const result =
+            await response.json();
 
-        subject:
-            data.subject,
+        if (!response.ok || !result.success) {
 
-        topic:
-            data.topic,
+            throw new Error(
+                result.error ||
+                "Failed to create study session."
+            );
+        }
 
-        date:
-            data.date,
+        const target = {
 
-        time:
-            data.time,
+            id: result.id,
 
-        duration:
-            data.duration,
+            subject: data.subject,
 
-        status:
-            "Pending"
+            topic: data.topic,
 
-    };
+            date: data.date,
 
+            time: data.time,
 
-    studyTargets.push(target);
+            duration: data.duration,
 
-    saveStudyTargets();
+            status: "Pending"
 
-    loadStudyTargets();
+        };
 
-    startStudyTarget(target.id);
+        // Keep local data for current frontend functionality
+        studyTargets.push(target);
+
+        saveStudyTargets();
+
+        loadStudyTargets();
+
+        startStudyTarget(target.id);
+
+        alert(
+            "✅ Study target saved to Django database!"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Study target error:",
+            error
+        );
+
+        alert(
+            "❌ Could not save study target.\n\n" +
+            error.message
+        );
+    }
 }
-
 
 // ======================================================
 // 📋 LOAD MY TIMETABLE
@@ -339,10 +352,7 @@ function createStudyTarget() {
 function loadStudyTargets() {
 
     const container =
-        document.getElementById(
-            "studyTargetsList"
-        );
-
+        document.getElementById("studyPlan");
 
     if (!container) {
         return;
@@ -743,6 +753,7 @@ function completeStudySession() {
 
         target.completedAt =
             new Date().toISOString();
+        markCompletedStudyAttendance(currentStudyTarget);
 
     }
 
@@ -1007,31 +1018,30 @@ function displayLibraryResources(
 
                 <p>
                     ${escapeHTML(
-                        resource.description || ""
-                    )}
+            resource.description || ""
+        )}
                 </p>
 
                 <div class="library-meta">
 
                     <span>
                         ${escapeHTML(
-                            resource.category || ""
-                        )}
+            resource.category || ""
+        )}
                     </span>
 
                     <span>
                         ${escapeHTML(
-                            resource.level || ""
-                        )}
+            resource.level || ""
+        )}
                     </span>
 
                 </div>
 
 
-                ${
-                    resource.file
-                    ?
-                    `
+                ${resource.file
+                ?
+                `
                     <button
                         class="primary-button"
                         onclick="openLibraryPDF('${escapeHTML(resource.file)}')"
@@ -1039,9 +1049,9 @@ function displayLibraryResources(
                         📖 Open Notes
                     </button>
                     `
-                    :
-                    ""
-                }
+                :
+                ""
+            }
 
             </div>
 
@@ -1468,7 +1478,7 @@ function loadSavedData() {
 
 document.addEventListener(
     "keydown",
-    function(event) {
+    function (event) {
 
         if (
             event.key === "Escape" &&
@@ -1513,6 +1523,9 @@ document.addEventListener(
         // Library
         initializeLibrary();
 
+        // Display Study Attendance Calendar
+        renderAttendanceCalendar();
+
     }
 );
 
@@ -1523,44 +1536,34 @@ document.addEventListener(
 
 function setDefaultStudyDate() {
 
-    const dateInput =
-        document.getElementById(
-            "studyDate"
-        );
-
+    const dateInput =document.getElementById("plannerDate");
 
     if (!dateInput) {
         return;
     }
-
 
     if (!dateInput.value) {
 
         const today =
             new Date();
 
-
         const year =
             today.getFullYear();
-
 
         const month =
             String(
                 today.getMonth() + 1
             ).padStart(2, "0");
 
-
         const day =
             String(
                 today.getDate()
             ).padStart(2, "0");
 
-
         dateInput.value =
             `${year}-${month}-${day}`;
     }
 }
-
 
 // ======================================================
 // 📚 ADD SUBJECT OPTIONS
@@ -1798,12 +1801,10 @@ function updateDashboardStudyStats() {
     const stats =
         getStudyStatistics();
 
-
     const studyTime =
         document.getElementById(
             "studyTime"
         );
-
 
     if (studyTime) {
 
@@ -1817,10 +1818,8 @@ function updateDashboardStudyStats() {
                     stats.totalMinutes / 60
                 );
 
-
             const minutes =
                 stats.totalMinutes % 60;
-
 
             studyTime.textContent =
                 `${hours}h ${minutes}m`;
@@ -1831,20 +1830,30 @@ function updateDashboardStudyStats() {
                 `${stats.totalMinutes}m`;
 
         }
-
     }
-
 
     const completedCount =
         document.getElementById(
             "completedStudySessions"
         );
 
-
     if (completedCount) {
 
         completedCount.textContent =
             stats.totalSessions;
+
+    }
+
+    // Update Study Streak
+    const streakCount =
+        document.getElementById(
+            "studyStreak"
+        );
+
+    if (streakCount) {
+
+        streakCount.textContent =
+            getCurrentStudyStreak();
 
     }
 }
@@ -1878,7 +1887,8 @@ completeStudySession =
         originalCompleteStudySession();
 
         updateAfterStudySession();
-
+        updateStudyAttendanceSummary();
+        updateDashboardStudyStats();
     };
 
 
@@ -1977,3 +1987,257 @@ setInterval(
     },
     60000
 );
+
+// ======================================================
+// 📅 STUDY ATTENDANCE — PART 1
+// ======================================================
+
+let studyAttendance = JSON.parse(
+    localStorage.getItem("studyAttendance") || "{}"
+);
+
+
+// Save attendance
+function saveStudyAttendance() {
+    localStorage.setItem(
+        "studyAttendance",
+        JSON.stringify(studyAttendance)
+    );
+}
+
+
+// Mark a date as studied
+function markStudyDate(date, minutes = 0) {
+
+    if (!date) {
+        return;
+    }
+
+    if (!studyAttendance[date]) {
+        studyAttendance[date] = {
+            studied: true,
+            minutes: 0,
+            sessions: 0
+        };
+    }
+
+    studyAttendance[date].studied = true;
+    studyAttendance[date].minutes += Number(minutes) || 0;
+    studyAttendance[date].sessions += 1;
+
+    saveStudyAttendance();
+
+    console.log(
+        `📅 Study attendance marked: ${date}`
+    );
+}
+
+
+// Check whether a date was studied
+function isStudyDateMarked(date) {
+
+    return Boolean(
+        studyAttendance[date] &&
+        studyAttendance[date].studied
+    );
+}
+
+
+// Get total study minutes
+function getTotalStudyMinutes() {
+
+    return Object.values(studyAttendance)
+        .reduce(
+            (total, day) =>
+                total + (Number(day.minutes) || 0),
+            0
+        );
+}
+
+
+// Get total study days
+function getTotalStudyDays() {
+
+    return Object.values(studyAttendance)
+        .filter(day => day.studied)
+        .length;
+}
+
+
+// Get attendance for a particular date
+function getStudyAttendance(date) {
+
+    return studyAttendance[date] || {
+        studied: false,
+        minutes: 0,
+        sessions: 0
+    };
+}
+// ======================================================
+// 🔥 STUDY STREAK
+// ======================================================
+
+function getCurrentStudyStreak() {
+
+    let streak = 0;
+
+    const date = new Date();
+
+    while (true) {
+
+        const dateString =
+            date.toISOString().split("T")[0];
+
+        if (!isStudyDateMarked(dateString)) {
+            break;
+        }
+
+        streak++;
+
+        date.setDate(
+            date.getDate() - 1
+        );
+    }
+
+    return streak;
+}
+
+// ======================================================
+// 📅 STUDY ATTENDANCE — PART 2
+// ⏱️ TIMER COMPLETE → AUTOMATIC ATTENDANCE
+// ======================================================
+
+function markCompletedStudyAttendance(target) {
+
+    if (!target || !target.date) {
+        console.warn("Study target information not found.");
+        return;
+    }
+
+    const minutes = Number(target.duration) || 0;
+
+    markStudyDate(target.date, minutes);
+
+    renderAttendanceCalendar();
+
+    console.log(
+        `✅ Study attendance saved for ${target.date}`
+    );
+
+    console.log(
+        `⏱️ Study time added: ${minutes} minutes`
+    );
+}
+
+
+// Update dashboard attendance information
+function updateStudyAttendanceSummary() {
+
+    const totalDays = getTotalStudyDays();
+    const totalMinutes = getTotalStudyMinutes();
+
+    const totalHours = Math.floor(totalMinutes / 60);
+    const remainingMinutes = totalMinutes % 60;
+
+    const studyDaysElement =
+        document.getElementById("studyAttendanceDays");
+
+    const studyHoursElement =
+        document.getElementById("studyAttendanceHours");
+
+    if (studyDaysElement) {
+        studyDaysElement.textContent = totalDays;
+    }
+
+    if (studyHoursElement) {
+
+        studyHoursElement.textContent =
+            `${totalHours}h ${remainingMinutes}m`;
+    }
+}
+
+// ======================================================
+// 📅 STUDY ATTENDANCE — CALENDAR
+// ======================================================
+
+let attendanceCalendarDate = new Date();
+
+function renderAttendanceCalendar() {
+
+    const calendar = document.getElementById("attendanceCalendar");
+    const monthYear = document.getElementById("attendanceMonthYear");
+
+    if (!calendar || !monthYear) return;
+
+    const year = attendanceCalendarDate.getFullYear();
+    const month = attendanceCalendarDate.getMonth();
+
+    const monthNames = [
+        "January", "February", "March",
+        "April", "May", "June",
+        "July", "August", "September",
+        "October", "November", "December"
+    ];
+
+    monthYear.textContent =
+        `${monthNames[month]} ${year}`;
+
+    calendar.innerHTML = "";
+
+    const firstDay =
+        new Date(year, month, 1).getDay();
+
+    const daysInMonth =
+        new Date(year, month + 1, 0).getDate();
+
+    // Empty spaces before first day
+    for (let i = 0; i < firstDay; i++) {
+
+        const emptyDay =
+            document.createElement("div");
+
+        emptyDay.className =
+            "calendar-day empty";
+
+        calendar.appendChild(emptyDay);
+    }
+
+    // Days
+    for (let day = 1; day <= daysInMonth; day++) {
+
+        const dayElement =
+            document.createElement("div");
+
+        dayElement.className =
+            "calendar-day";
+
+        dayElement.textContent = day;
+
+        const dateString =
+            `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+        // Studied day
+        if (isStudyDateMarked(dateString)) {
+
+            dayElement.classList.add(
+                "studied"
+            );
+
+            dayElement.title =
+                `Studied: ${getStudyAttendance(dateString).minutes} minutes`;
+        }
+
+        calendar.appendChild(dayElement);
+    }
+}
+
+
+// Previous / Next month
+function changeAttendanceMonth(direction) {
+
+    attendanceCalendarDate.setMonth(
+        attendanceCalendarDate.getMonth() + direction
+    );
+
+    renderAttendanceCalendar();
+}

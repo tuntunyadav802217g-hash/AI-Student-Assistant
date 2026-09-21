@@ -186,7 +186,69 @@
 
             </div>
 
+            <!-- =========================================
+     STUDY STATS
+            ========================================= -->
 
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ⏱️
+                    </div>
+
+                    <div>
+                        <p>
+                            Study Time
+                        </p>
+
+                        <h3 id="studyTime">
+                            0m
+                        </h3>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        📚
+                    </div>
+
+                    <div>
+                        <p>
+                            Completed Sessions
+                        </p>
+
+                        <h3 id="completedStudySessions">
+                            0
+                        </h3>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🔥
+                    </div>
+
+                    <div>
+                        <p>
+                            Study Streak
+                        </p>
+
+                        <h3 id="studyStreak">
+                            0 days
+                        </h3>
+                    </div>
+
+                </div>
+
+            </div>
 
             <!-- QUICK ACTIONS -->
 
@@ -727,6 +789,34 @@
 
 
                 <div id="attendanceList" class="attendance-list"></div>
+
+                <!-- 📅 STUDY ATTENDANCE CALENDAR -->
+                <div class="attendance-calendar">
+
+                    <div class="calendar-header">
+                        <button onclick="changeAttendanceMonth(-1)">❮</button>
+
+                        <h3 id="attendanceMonthYear">
+                            September 2026
+                        </h3>
+
+                        <button onclick="changeAttendanceMonth(1)">❯</button>
+                    </div>
+
+                    <div class="calendar-weekdays">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+
+                    <div id="attendanceCalendar" class="calendar-days">
+                    </div>
+
+                </div>
 
 
             </div>

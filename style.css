@@ -2003,3 +2003,151 @@ body.dark .stat-icon {
         padding: 18px;
     }
 }
+/* ======================================================
+   📅 STUDY ATTENDANCE — V8 CALENDAR
+   ====================================================== */
+
+.attendance-calendar {
+    margin-top: 25px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--card);
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.calendar-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--text);
+}
+
+.calendar-header button {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.calendar-header button:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.calendar-weekdays,
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.calendar-weekdays {
+    margin-bottom: 8px;
+}
+
+.calendar-weekdays div {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 0;
+}
+
+.calendar-day {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.calendar-day:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+/* 🟢 Studied Day */
+
+.calendar-day.studied {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+    font-weight: 700;
+}
+
+/* Empty calendar spaces */
+
+.calendar-day.empty {
+    visibility: hidden;
+}
+
+/* 🌙 Dark Mode */
+
+body.dark .attendance-calendar {
+    background: var(--card);
+    border-color: var(--border);
+}
+
+body.dark .calendar-day {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+body.dark .calendar-day.studied {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+}
+
+/* 📱 Mobile */
+
+@media (max-width: 600px) {
+
+    .attendance-calendar {
+        padding: 15px;
+    }
+
+    .calendar-weekdays,
+    .calendar-days {
+        gap: 5px;
+    }
+
+    .calendar-day {
+        min-height: 36px;
+        font-size: 11px;
+        border-radius: 8px;
+    }
+
+    .calendar-weekdays div {
+        font-size: 10px;
+    }
+
+    .calendar-header h3 {
+        font-size: 16px;
+    }
+
+    .calendar-header button {
+        width: 36px;
+        height: 36px;
+    }
+}
