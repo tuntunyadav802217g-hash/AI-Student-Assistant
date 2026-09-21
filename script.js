@@ -1,48 +1,75 @@
-// =====================================
-// 🔐 V6 DASHBOARD PROTECTION
-// =====================================
+// ======================================================
+// 🤖 AI STUDENT ASSISTANT
+// STUDY MANAGEMENT SYSTEM
+// SCRIPT.JS — PART 1/3
+// ======================================================
 
-if (localStorage.getItem("studentLoggedIn") !== "true") {
-    window.location.href = "login.html";
+
+// ======================================================
+// 🔐 LOGIN PROTECTION
+// ======================================================
+
+const currentPage = window.location.pathname.toLowerCase();
+
+if (
+    !currentPage.endsWith("login.html") &&
+    !currentPage.endsWith("signup.html")
+) {
+    const loggedIn = localStorage.getItem("studentLoggedIn");
+
+    if (loggedIn !== "true") {
+        window.location.href = "login.html";
+    }
 }
 
-/* =========================================
-   AI STUDENT ASSISTANT
-   VERSION 5
-   JAVASCRIPT
-========================================= */
 
-
-/* =========================================
-   SUBJECT DATA
-========================================= */
+// ======================================================
+// 📚 SUBJECT DATA
+// ======================================================
 
 const subjects = [
-    "Mathematics",
     "Python",
+    "C / C++",
     "DSA",
-    "Physics"
-];
-
-const subjectIds = [
-    "math",
-    "python",
-    "dsa",
-    "physics"
+    "AI / ML",
+    "Web Development",
+    "Database",
+    "Git & GitHub"
 ];
 
 
-/* =========================================
-   GLOBAL DATA
-========================================= */
+// ======================================================
+// 🌐 DJANGO LIBRARY API
+// ======================================================
 
-let timerSeconds = 25 * 60;
+const LIBRARY_API_BASE_URL =
+    "http://127.0.0.1:8000";
+
+
+// ======================================================
+// ⏱️ STUDY TIMER
+// ======================================================
+
+let timerSeconds = 0;
 let timerInterval = null;
 
 
-/* =========================================
-   SECTION NAVIGATION
-========================================= */
+// Current study target
+let currentStudyTarget = null;
+
+
+// ======================================================
+// 📅 STUDY TARGET DATA
+// ======================================================
+
+let studyTargets = JSON.parse(
+    localStorage.getItem("studyTargets") || "[]"
+);
+
+
+// ======================================================
+// 🧭 NAVIGATION
+// ======================================================
 
 function showSection(sectionId, button = null) {
 
@@ -50,9 +77,7 @@ function showSection(sectionId, button = null) {
         document.querySelectorAll(".page-section");
 
     sections.forEach(section => {
-
         section.classList.remove("active-section");
-
     });
 
 
@@ -60,1639 +85,470 @@ function showSection(sectionId, button = null) {
         document.getElementById(sectionId);
 
     if (selectedSection) {
-
-        selectedSection.classList.add(
-            "active-section"
-        );
-
+        selectedSection.classList.add("active-section");
     }
 
-
-    /* Update active navigation button */
 
     const navButtons =
         document.querySelectorAll(".nav-button");
 
     navButtons.forEach(btn => {
-
         btn.classList.remove("active");
-
     });
 
 
     if (button) {
-
         button.classList.add("active");
-
-    } else {
-
-        navButtons.forEach(btn => {
-
-            const onclickText =
-                btn.getAttribute("onclick") || "";
-
-            if (
-                onclickText.includes(
-                    sectionId
-                )
-            ) {
-
-                btn.classList.add("active");
-
-            }
-
-        });
-
     }
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
 }
 
 
-/* =========================================
-   DARK / LIGHT MODE
-========================================= */
+// ======================================================
+// 👤 LOGGED-IN STUDENT
+// ======================================================
 
-function toggleTheme() {
+function loadLoggedInStudent() {
 
-    document.body.classList.toggle("dark");
+    const studentData =
+        localStorage.getItem("studentUser");
 
-
-    const isDark =
-        document.body.classList.contains("dark");
-
-
-    localStorage.setItem(
-        "studentTheme",
-        isDark ? "dark" : "light"
-    );
-
-
-    updateThemeButton();
-}
-
-
-function updateThemeButton() {
-
-    const button =
-        document.getElementById("themeButton");
-
-    if (!button) return;
-
-
-    const isDark =
-        document.body.classList.contains("dark");
-
-
-    button.textContent =
-        isDark ? "☀️" : "🌙";
-}
-
-
-function loadTheme() {
-
-    const savedTheme =
-        localStorage.getItem("studentTheme");
-
-
-    if (savedTheme === "dark") {
-
-        document.body.classList.add("dark");
-
-    }
-
-
-    updateThemeButton();
-}
-
-
-/* =========================================
-   GET MARKS
-========================================= */
-
-function getMarks() {
-
-    const marks = {};
-
-
-    subjectIds.forEach(id => {
-
-        const input =
-            document.getElementById(id);
-
-        marks[id] =
-            Number(input.value);
-
-    });
-
-
-    return marks;
-}
-
-
-/* =========================================
-   VALIDATE MARKS
-========================================= */
-
-function validateMarks() {
-
-    for (const id of subjectIds) {
-
-        const input =
-            document.getElementById(id);
-
-
-        if (input.value.trim() === "") {
-
-            alert(
-                "Please enter marks for all subjects."
-            );
-
-            input.focus();
-
-            return false;
-        }
-
-
-        const value =
-            Number(input.value);
-
-
-        if (
-            isNaN(value) ||
-            value < 0 ||
-            value > 100
-        ) {
-
-            alert(
-                "Marks must be between 0 and 100."
-            );
-
-            input.focus();
-
-            return false;
-        }
-
-    }
-
-
-    return true;
-}
-
-
-/* =========================================
-   CALCULATE RESULT
-========================================= */
-
-function calculateResult(saveHistory = true) {
-
-    if (!validateMarks()) {
-
+    if (!studentData) {
         return;
-
     }
 
 
-    const nameInput =
-        document.getElementById("studentName");
+    try {
+
+        const student =
+            JSON.parse(studentData);
 
 
-    const name =
-        nameInput.value.trim() || "Student";
+        const welcomeName =
+            document.getElementById("welcomeName");
+
+        const profileName =
+            document.getElementById("profileName");
+
+        const profileEmail =
+            document.getElementById("profileEmail");
 
 
-    const marks =
-        getMarks();
+        if (welcomeName && student.name) {
+            welcomeName.textContent =
+                student.name;
+        }
 
 
-    const total =
-        marks.math +
-        marks.python +
-        marks.dsa +
-        marks.physics;
+        if (profileName && student.name) {
+            profileName.value =
+                student.name;
+        }
 
 
-    const percentage =
-        total / subjects.length;
+        if (profileEmail && student.email) {
+            profileEmail.value =
+                student.email;
+        }
 
+    } catch (error) {
 
-    const grade =
-        calculateGrade(percentage);
-
-
-    const weakest =
-        findWeakestSubject(marks);
-
-
-    /* Dashboard */
-
-    document.getElementById(
-        "welcomeName"
-    ).textContent = name;
-
-
-    document.getElementById(
-        "percentageValue"
-    ).textContent =
-        percentage.toFixed(1) + "%";
-
-
-    document.getElementById(
-        "gradeValue"
-    ).textContent =
-        grade;
-
-
-    document.getElementById(
-        "totalValue"
-    ).textContent =
-        `${total}/400`;
-
-
-    document.getElementById(
-        "weakSubjectValue"
-    ).textContent =
-        weakest.name;
-
-
-    /* Create sections */
-
-    createPerformance(marks);
-
-    createChart(marks);
-
-    createTargets(marks);
-
-    createStudyPlan(marks);
-
-    createSuggestion(
-        marks,
-        percentage,
-        grade,
-        weakest.name
-    );
-
-
-    /* Save */
-
-    const studentData = {
-
-        name: name,
-
-        marks: marks,
-
-        total: total,
-
-        percentage: percentage,
-
-        grade: grade,
-
-        weakest: weakest.name
-
-    };
-
-
-    localStorage.setItem(
-        "studentData",
-        JSON.stringify(studentData)
-    );
-
-
-    if (saveHistory) {
-
-        saveHistoryRecord(
-            studentData
+        console.error(
+            "Student data error:",
+            error
         );
 
     }
+}
 
 
-    /* Go to dashboard */
+// ======================================================
+// 🚪 LOGOUT
+// ======================================================
 
-    showSection(
-        "dashboardSection"
+function logoutUser() {
+
+    localStorage.removeItem(
+        "studentLoggedIn"
     );
 
+    localStorage.removeItem(
+        "currentStudent"
+    );
+
+    window.location.href =
+        "login.html";
 }
 
 
-/* =========================================
-   GRADE CALCULATION
-========================================= */
+// ======================================================
+// 📅 STUDY TARGET SAVE
+// ======================================================
 
-function calculateGrade(percentage) {
+function saveStudyTargets() {
 
-    if (percentage >= 90) {
-        return "A+";
-    }
-
-    if (percentage >= 80) {
-        return "A";
-    }
-
-    if (percentage >= 70) {
-        return "B";
-    }
-
-    if (percentage >= 60) {
-        return "C";
-    }
-
-    if (percentage >= 50) {
-        return "D";
-    }
-
-    return "F";
+    localStorage.setItem(
+        "studyTargets",
+        JSON.stringify(studyTargets)
+    );
 }
 
 
-/* =========================================
-   FIND WEAKEST SUBJECT
-========================================= */
+// ======================================================
+// 📅 GET PLANNER INPUTS
+// ======================================================
 
-function findWeakestSubject(marks) {
+function getPlannerInputs() {
 
-    let weakestId =
-        subjectIds[0];
+    const subject =
+        document.getElementById("studySubject");
 
+    const topic =
+        document.getElementById("studyTopic");
 
-    subjectIds.forEach(id => {
+    const date =
+        document.getElementById("studyDate");
 
-        if (
-            marks[id] <
-            marks[weakestId]
-        ) {
+    const time =
+        document.getElementById("studyTime");
 
-            weakestId = id;
-
-        }
-
-    });
-
-
-    const index =
-        subjectIds.indexOf(weakestId);
+    const duration =
+        document.getElementById("studyDuration");
 
 
     return {
 
-        id: weakestId,
+        subject:
+            subject ? subject.value.trim() : "",
 
-        name: subjects[index],
+        topic:
+            topic ? topic.value.trim() : "",
 
-        marks: marks[weakestId]
+        date:
+            date ? date.value : "",
+
+        time:
+            time ? time.value : "",
+
+        duration:
+            duration ? Number(duration.value) : 0
 
     };
 }
 
 
-/* =========================================
-   SUBJECT PERFORMANCE
-========================================= */
-
-function createPerformance(marks) {
-
-    const container =
-        document.getElementById(
-            "subjectPerformance"
-        );
-
-
-    container.innerHTML = "";
-
-
-    subjectIds.forEach((id, index) => {
-
-        const mark =
-            marks[id];
-
-
-        const item =
-            document.createElement("div");
-
-
-        item.className =
-            "performance-item";
-
-
-        item.innerHTML = `
-
-            <div class="performance-header">
-
-                <span>
-                    ${subjects[index]}
-                </span>
-
-                <span>
-                    ${mark}/100
-                </span>
-
-            </div>
-
-            <div class="progress-container">
-
-                <div
-                    class="progress-bar"
-                    style="width: ${mark}%"
-                ></div>
-
-            </div>
-
-        `;
-
-
-        container.appendChild(item);
-
-    });
-
-}
-
-
-/* =========================================
-   PERFORMANCE CHART
-========================================= */
-
-function createChart(marks) {
-
-    const container =
-        document.getElementById(
-            "marksChart"
-        );
-
-
-    container.innerHTML = "";
-
-
-    subjectIds.forEach((id, index) => {
-
-        const mark =
-            marks[id];
-
-
-        const chartItem =
-            document.createElement("div");
-
-
-        chartItem.innerHTML = `
-
-            <div class="chart-label">
-
-                <span>
-                    ${subjects[index]}
-                </span>
-
-                <strong>
-                    ${mark}%
-                </strong>
-
-            </div>
-
-            <div class="chart-track">
-
-                <div
-                    class="chart-fill"
-                    style="width: ${mark}%"
-                ></div>
-
-            </div>
-
-        `;
-
-
-        container.appendChild(chartItem);
-
-    });
-
-}
-
-
-/* =========================================
-   SUBJECT TARGETS
-========================================= */
-
-function getTarget(subject) {
-
-    const saved =
-        localStorage.getItem(
-            `target_${subject}`
-        );
-
-
-    return saved
-        ? Number(saved)
-        : 80;
-}
-
-
-function createTargets(marks) {
-
-    const container =
-        document.getElementById(
-            "targetPerformance"
-        );
-
-
-    container.innerHTML = "";
-
-
-    subjectIds.forEach((id, index) => {
-
-        const subject =
-            subjects[index];
-
-
-        const mark =
-            marks[id];
-
-
-        const target =
-            getTarget(subject);
-
-
-        const progress =
-            Math.min(
-                (mark / target) * 100,
-                100
-            );
-
-
-        const achieved =
-            mark >= target;
-
-
-        const item =
-            document.createElement("div");
-
-
-        item.className =
-            "target-item";
-
-
-        item.innerHTML = `
-
-            <div class="target-header">
-
-                <span class="target-subject">
-                    ${subject}
-                </span>
-
-                <span class="target-info">
-                    Target: ${target}
-                </span>
-
-            </div>
-
-
-            <div class="target-bar">
-
-                <div
-                    class="target-fill"
-                    style="width: ${progress}%"
-                ></div>
-
-            </div>
-
-
-            <div class="target-bottom">
-
-                <span>
-                    Current: ${mark}
-                </span>
-
-                <span class="${achieved
-                ? "target-achieved"
-                : "target-needed"
-            }">
-
-                    ${achieved
-                ? "✓ Target Achieved"
-                : `${target - mark} marks needed`
-            }
-
-                </span>
-
-            </div>
-
-        `;
-
-
-        container.appendChild(item);
-
-    });
-
-}
-
-
-/* =========================================
-   STUDY PLAN
-========================================= */
-
-function createStudyPlan(marks) {
-
-    const container =
-        document.getElementById(
-            "studyPlan"
-        );
-
+// ======================================================
+// 🎯 CREATE STUDY TARGET
+// ======================================================
+
+function createStudyTarget() {
 
     const data =
-        subjectIds.map((id, index) => {
-
-            return {
-
-                subject: subjects[index],
-
-                marks: marks[id]
-
-            };
-
-        });
+        getPlannerInputs();
 
 
-    data.sort(
-        (a, b) =>
-            a.marks - b.marks
-    );
+    if (!data.subject) {
 
-
-    let html =
-        `<div class="study-plan">`;
-
-
-    const durations = [
-        50,
-        40,
-        30,
-        25
-    ];
-
-
-    data.forEach((item, index) => {
-
-        html += `
-
-            <div class="study-task">
-
-                <div class="task-time">
-                    ${index + 1}
-                    . Session
-                </div>
-
-                <div>
-
-                    <div class="task-name">
-                        📚 Study ${item.subject}
-                    </div>
-
-                    <div class="task-duration">
-                        Current marks:
-                        ${item.marks}/100
-                    </div>
-
-                </div>
-
-                <div class="task-duration">
-                    ${durations[index]} min
-                </div>
-
-            </div>
-
-        `;
-
-    });
-
-
-    html += `</div>`;
-
-
-    container.innerHTML =
-        html;
-
-}
-
-
-/* =========================================
-   AI STUDY SUGGESTION
-========================================= */
-
-function createSuggestion(
-    marks,
-    percentage,
-    grade,
-    weakest
-) {
-
-    const container =
-        document.getElementById(
-            "dashboardSuggestion"
+        alert(
+            "Please select a subject."
         );
 
-
-    let message = "";
-
-
-    if (percentage >= 85) {
-
-        message = `
-            <strong>Excellent work! 🎉</strong>
-            <p>
-                Your overall performance is strong.
-                Focus on consistency and advanced
-                problem solving to improve further.
-            </p>
-        `;
-
-    } else if (percentage >= 70) {
-
-        message = `
-            <strong>Good progress! 💪</strong>
-            <p>
-                Your performance is good.
-                Give extra attention to
-                <b>${weakest}</b> and practice
-                questions regularly.
-            </p>
-        `;
-
-    } else if (percentage >= 50) {
-
-        message = `
-            <strong>Keep improving! 📚</strong>
-            <p>
-                Focus on your weak areas,
-                revise your concepts and solve
-                practice questions every day.
-                Start with <b>${weakest}</b>.
-            </p>
-        `;
-
-    } else {
-
-        message = `
-            <strong>Let's build your foundation! 🚀</strong>
-            <p>
-                Start with basic concepts and
-                follow your study planner daily.
-                Give priority to <b>${weakest}</b>.
-            </p>
-        `;
-
+        return;
     }
 
 
-    container.innerHTML = `
+    if (!data.topic) {
 
-        <div class="suggestion-box">
+        alert(
+            "Please enter a topic."
+        );
 
-            <div class="suggestion-content">
+        return;
+    }
 
-                🤖
 
-                <div>
+    if (!data.date) {
 
-                    ${message}
+        alert(
+            "Please select a study date."
+        );
 
-                    <small>
-                        Current Grade:
-                        <b>${grade}</b>
-                    </small>
+        return;
+    }
 
-                </div>
+
+    if (!data.time) {
+
+        alert(
+            "Please select a start time."
+        );
+
+        return;
+    }
+
+
+    if (!data.duration || data.duration <= 0) {
+
+        alert(
+            "Please select study duration."
+        );
+
+        return;
+    }
+
+
+    const target = {
+
+        id:
+            Date.now(),
+
+        subject:
+            data.subject,
+
+        topic:
+            data.topic,
+
+        date:
+            data.date,
+
+        time:
+            data.time,
+
+        duration:
+            data.duration,
+
+        status:
+            "Pending"
+
+    };
+
+
+    studyTargets.push(target);
+
+    saveStudyTargets();
+
+    loadStudyTargets();
+
+    startStudyTarget(target.id);
+}
+
+
+// ======================================================
+// 📋 LOAD MY TIMETABLE
+// ======================================================
+
+function loadStudyTargets() {
+
+    const container =
+        document.getElementById(
+            "studyTargetsList"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    if (studyTargets.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                📅
+                <p>
+                    No study targets created yet.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    const sortedTargets =
+        [...studyTargets].sort(
+            (a, b) => {
+
+                const first =
+                    `${a.date} ${a.time}`;
+
+                const second =
+                    `${b.date} ${b.time}`;
+
+                return first.localeCompare(second);
+            }
+        );
+
+
+    container.innerHTML =
+        sortedTargets.map(target => `
+
+        <div class="study-target-card">
+
+            <div class="study-target-info">
+
+                <h3>
+                    📚 ${escapeHTML(target.subject)}
+                </h3>
+
+                <p>
+                    <strong>Topic:</strong>
+                    ${escapeHTML(target.topic)}
+                </p>
+
+                <p>
+                    📅 ${target.date}
+                    &nbsp;
+                    ⏰ ${target.time}
+                </p>
+
+                <p>
+                    ⏱️ ${target.duration} minutes
+                </p>
+
+                <p>
+                    Status:
+                    <strong>
+                        ${target.status}
+                    </strong>
+                </p>
+
+            </div>
+
+
+            <div class="study-target-actions">
+
+                <button
+                    onclick="startStudyTarget(${target.id})"
+                    class="primary-button"
+                >
+                    ▶ Study
+                </button>
+
+
+                <button
+                    onclick="deleteStudyTarget(${target.id})"
+                    class="reset-button"
+                >
+                    🗑️ Delete
+                </button>
 
             </div>
 
         </div>
 
-    `;
+    `).join("");
 }
 
 
-/* =========================================
-   TASK MANAGER
-========================================= */
+// ======================================================
+// ▶️ START SELECTED STUDY TARGET
+// ======================================================
 
-function addTask() {
+function startStudyTarget(targetId) {
 
-    const input =
-        document.getElementById(
-            "taskInput"
+    const target =
+        studyTargets.find(
+            item => item.id === targetId
         );
 
 
-    const text =
-        input.value.trim();
-
-
-    if (!text) {
-
-        alert(
-            "Please enter a task."
-        );
-
-        input.focus();
-
-        return;
-
-    }
-
-
-    const tasks =
-        JSON.parse(
-            localStorage.getItem(
-                "studentTasks"
-            )
-        ) || [];
-
-
-    tasks.push({
-
-        id:
-            Date.now(),
-
-        text:
-            text,
-
-        completed:
-            false
-
-    });
-
-
-    localStorage.setItem(
-        "studentTasks",
-        JSON.stringify(tasks)
-    );
-
-
-    input.value = "";
-
-
-    loadTasks();
-}
-
-
-function loadTasks() {
-
-    const container =
-        document.getElementById(
-            "taskList"
-        );
-
-
-    if (!container) return;
-
-
-    const tasks =
-        JSON.parse(
-            localStorage.getItem(
-                "studentTasks"
-            )
-        ) || [];
-
-
-    if (tasks.length === 0) {
-
-        container.innerHTML = `
-
-            <div class="empty-state">
-
-                📝
-
-                <p>
-                    No tasks yet.
-                    Add your first assignment.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    container.innerHTML = "";
-
-
-    tasks.forEach(task => {
-
-        const item =
-            document.createElement("div");
-
-
-        item.className =
-            "task-item";
-
-
-        item.innerHTML = `
-
-            <div class="task-left">
-
-                <input
-                    type="checkbox"
-                    class="task-checkbox"
-                    ${task.completed
-                ? "checked"
-                : ""
-            }
-                    onchange="
-                        toggleTask(${task.id})
-                    "
-                >
-
-                <span
-                    class="task-text
-                    ${task.completed
-                ? "task-completed"
-                : ""
-            }"
-                >
-                    ${escapeHTML(task.text)}
-                </span>
-
-            </div>
-
-
-            <button
-                class="delete-task"
-                onclick="
-                    deleteTask(${task.id})
-                "
-                title="Delete task"
-            >
-                🗑️
-            </button>
-
-        `;
-
-
-        container.appendChild(item);
-
-    });
-
-}
-
-
-function toggleTask(id) {
-
-    const tasks =
-        JSON.parse(
-            localStorage.getItem(
-                "studentTasks"
-            )
-        ) || [];
-
-
-    const task =
-        tasks.find(
-            item => item.id === id
-        );
-
-
-    if (task) {
-
-        task.completed =
-            !task.completed;
-
-    }
-
-
-    localStorage.setItem(
-        "studentTasks",
-        JSON.stringify(tasks)
-    );
-
-
-    loadTasks();
-}
-
-
-function deleteTask(id) {
-
-    let tasks =
-        JSON.parse(
-            localStorage.getItem(
-                "studentTasks"
-            )
-        ) || [];
-
-
-    tasks =
-        tasks.filter(
-            task => task.id !== id
-        );
-
-
-    localStorage.setItem(
-        "studentTasks",
-        JSON.stringify(tasks)
-    );
-
-
-    loadTasks();
-}
-
-
-/* =========================================
-   ATTENDANCE
-========================================= */
-
-function loadAttendance() {
-
-    const container =
-        document.getElementById(
-            "attendanceList"
-        );
-
-
-    if (!container) return;
-
-
-    container.innerHTML = "";
-
-
-    subjects.forEach((subject, index) => {
-
-        const saved =
-            JSON.parse(
-                localStorage.getItem(
-                    "studentAttendance"
-                )
-            ) || {};
-
-
-        const data =
-            saved[subject] || {
-
-                attended: 0,
-
-                total: 0
-
-            };
-
-
-        const item =
-            document.createElement("div");
-
-
-        item.className =
-            "attendance-item";
-
-
-        item.innerHTML = `
-
-            <div class="attendance-header">
-
-                <span class="attendance-subject">
-                    ${subject}
-                </span>
-
-                <span
-                    id="attendancePercent${index}"
-                    class="attendance-percent"
-                >
-                    ${calculateAttendance(
-            data.attended,
-            data.total
-        )}
-                </span>
-
-            </div>
-
-
-            <div class="attendance-inputs">
-
-                <input
-                    type="number"
-                    id="attended${index}"
-                    min="0"
-                    placeholder="Classes attended"
-                    value="${data.attended || ""}"
-                >
-
-                <input
-                    type="number"
-                    id="totalClasses${index}"
-                    min="1"
-                    placeholder="Total classes"
-                    value="${data.total || ""}"
-                >
-
-            </div>
-
-
-            <div class="attendance-bar">
-
-                <div
-                    id="attendanceFill${index}"
-                    class="attendance-fill"
-                    style="
-                        width: ${getAttendanceNumber(
-            data.attended,
-            data.total
-        )
-            }%;
-                    "
-                ></div>
-
-            </div>
-
-
-            <button
-                class="primary-button"
-                style="
-                    margin-top: 12px;
-                    width: 100%;
-                    min-height: 42px;
-                    font-size: 13px;
-                "
-                onclick="
-                    saveAttendance(${index})
-                "
-            >
-                💾 Save Attendance
-            </button>
-
-        `;
-
-
-        container.appendChild(item);
-
-    });
-
-}
-
-
-function calculateAttendance(
-    attended,
-    total
-) {
-
-    if (!total || total <= 0) {
-
-        return "0%";
-
-    }
-
-
-    const percentage =
-        (attended / total) * 100;
-
-
-    return percentage.toFixed(1) + "%";
-}
-
-
-function getAttendanceNumber(
-    attended,
-    total
-) {
-
-    if (!total || total <= 0) {
-
-        return 0;
-
-    }
-
-
-    return Math.min(
-        (attended / total) * 100,
-        100
-    );
-}
-
-
-function saveAttendance(index) {
-
-    const attendedInput =
-        document.getElementById(
-            `attended${index}`
-        );
-
-
-    const totalInput =
-        document.getElementById(
-            `totalClasses${index}`
-        );
-
-
-    const attended =
-        Number(
-            attendedInput.value
-        );
-
-
-    const total =
-        Number(
-            totalInput.value
-        );
-
-
-    if (
-        total <= 0 ||
-        attended < 0 ||
-        attended > total
-    ) {
-
-        alert(
-            "Please enter valid attendance values."
-        );
-
-        return;
-
-    }
-
-
-    const saved =
-        JSON.parse(
-            localStorage.getItem(
-                "studentAttendance"
-            )
-        ) || {};
-
-
-    saved[subjects[index]] = {
-
-        attended: attended,
-
-        total: total
-
-    };
-
-
-    localStorage.setItem(
-        "studentAttendance",
-        JSON.stringify(saved)
-    );
-
-
-    const percent =
-        getAttendanceNumber(
-            attended,
-            total
-        );
-
-
-    document.getElementById(
-        `attendancePercent${index}`
-    ).textContent =
-        percent.toFixed(1) + "%";
-
-
-    document.getElementById(
-        `attendanceFill${index}`
-    ).style.width =
-        percent + "%";
-
-
-    alert(
-        `${subjects[index]} attendance saved.`
-    );
-}
-
-
-/* =========================================
-   PROFILE
-========================================= */
-
-// =====================================
-// 👤 SAVE STUDENT PROFILE
-// =====================================
-
-function saveProfile() {
-
-    const profileName =
-        document.getElementById("profileName").value.trim();
-
-    const profileCourse =
-        document.getElementById("profileCourse").value.trim();
-
-    const profileSemester =
-        document.getElementById("profileSemester").value.trim();
-
-    const profileRoll =
-        document.getElementById("profileRoll").value.trim();
-
-
-    // Get logged-in account
-    const currentStudent =
-        JSON.parse(
-            localStorage.getItem("currentStudent")
-        );
-
-
-    if (!currentStudent) {
-
-        alert("Please login first. ❌");
-
+    if (!target) {
         return;
     }
 
 
-    // Create profile data
-    const profileData = {
+    currentStudyTarget =
+        target;
 
-        name: profileName || currentStudent.name,
 
-        email: currentStudent.email,
+    timerSeconds =
+        target.duration * 60;
 
-        course: profileCourse,
 
-        semester: profileSemester,
+    updateTimerDisplay();
 
-        roll: profileRoll
-    };
 
-
-    // Save profile
-    localStorage.setItem(
-        "studentProfile",
-        JSON.stringify(profileData)
-    );
-
-
-    // Keep account name synchronized
-    currentStudent.name = profileData.name;
-
-    localStorage.setItem(
-        "currentStudent",
-        JSON.stringify(currentStudent)
-    );
-
-
-    // Update dashboard name
-    const welcomeName =
-        document.getElementById("welcomeName");
-
-    if (welcomeName) {
-
-        welcomeName.textContent =
-            profileData.name;
-    }
-
-
-    // Show message
-    const profileMessage =
-        document.getElementById("profileMessage");
-
-    if (profileMessage) {
-
-        profileMessage.textContent =
-            "Profile saved successfully! ✅";
-
-        setTimeout(function () {
-
-            profileMessage.textContent = "";
-
-        }, 3000);
-    }
-
-}
-
-// =====================================
-// 👤 LOAD STUDENT PROFILE
-// =====================================
-
-function loadProfile() {
-
-    const savedProfile =
-        JSON.parse(
-            localStorage.getItem("studentProfile")
-        );
-
-
-    const currentStudent =
-        JSON.parse(
-            localStorage.getItem("currentStudent")
-        );
-
-
-    if (!savedProfile && !currentStudent) {
-        return;
-    }
-
-
-    const profile =
-        savedProfile || {
-
-            name: currentStudent.name,
-
-            email: currentStudent.email,
-
-            course: "",
-
-            semester: "",
-
-            roll: ""
-        };
-
-
-    const profileName =
-        document.getElementById("profileName");
-
-    if (profileName) {
-
-        profileName.value =
-            profile.name || "";
-    }
-
-
-    const profileEmail =
-        document.getElementById("profileEmail");
-
-    if (profileEmail) {
-
-        profileEmail.value =
-            profile.email || "";
-    }
-
-
-    const profileCourse =
-        document.getElementById("profileCourse");
-
-    if (profileCourse) {
-
-        profileCourse.value =
-            profile.course || "";
-    }
-
-
-    const profileSemester =
-        document.getElementById("profileSemester");
-
-    if (profileSemester) {
-
-        profileSemester.value =
-            profile.semester || "";
-    }
-
-
-    const profileRoll =
-        document.getElementById("profileRoll");
-
-    if (profileRoll) {
-
-        profileRoll.value =
-            profile.roll || "";
-    }
-}
-
-
-/* =========================================
-   PROGRESS HISTORY
-========================================= */
-
-function saveHistoryRecord(data) {
-
-    const history =
-        JSON.parse(
-            localStorage.getItem(
-                "studentHistory"
-            )
-        ) || [];
-
-
-    history.unshift({
-
-        name: data.name,
-
-        percentage:
-            Number(
-                data.percentage.toFixed(1)
-            ),
-
-        grade: data.grade,
-
-        weakest: data.weakest,
-
-        date:
-            new Date().toLocaleString()
-
-    });
-
-
-    /* Keep latest 10 records */
-
-    if (history.length > 10) {
-
-        history.pop();
-
-    }
-
-
-    localStorage.setItem(
-        "studentHistory",
-        JSON.stringify(history)
-    );
-
-
-    loadHistory();
-}
-
-
-function loadHistory() {
-
-    const container =
+    const status =
         document.getElementById(
-            "historyList"
+            "timerStatus"
         );
 
 
-    if (!container) return;
+    if (status) {
 
-
-    const history =
-        JSON.parse(
-            localStorage.getItem(
-                "studentHistory"
-            )
-        ) || [];
-
-
-    if (history.length === 0) {
-
-        container.innerHTML = `
-
-            <div class="empty-state">
-
-                📈
-
-                <p>
-                    No performance history yet.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
+        status.textContent =
+            `Ready: ${target.subject} - ${target.topic}`;
 
     }
 
 
-    container.innerHTML = "";
-
-
-    history.forEach(record => {
-
-        const item =
-            document.createElement("div");
-
-
-        item.className =
-            "history-item";
-
-
-        item.innerHTML = `
-
-            <div>
-
-                <div class="history-date">
-                    ${escapeHTML(record.date)}
-                </div>
-
-                <strong>
-                    ${escapeHTML(record.name)}
-                </strong>
-
-            </div>
-
-
-            <div class="history-average">
-                ${record.percentage}%
-            </div>
-
-
-            <div class="history-grade">
-                ${escapeHTML(record.grade)}
-            </div>
-
-
-            <div class="history-date">
-                Focus:
-                ${escapeHTML(record.weakest)}
-            </div>
-
-        `;
-
-
-        container.appendChild(item);
-
-    });
-
+    showSection(
+        "plannerSection"
+    );
 }
 
 
-/* =========================================
-   STUDY TIMER
-========================================= */
+// ======================================================
+// 🗑️ DELETE STUDY TARGET
+// ======================================================
+
+function deleteStudyTarget(targetId) {
+
+    const confirmed =
+        confirm(
+            "Delete this study target?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    studyTargets =
+        studyTargets.filter(
+            target =>
+                target.id !== targetId
+        );
+
+
+    saveStudyTargets();
+
+    loadStudyTargets();
+}
+
+
+// ======================================================
+// 🛡️ SIMPLE HTML ESCAPE
+// ======================================================
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+// ======================================================
+// ⏱️ TIMER DISPLAY
+// ======================================================
 
 function updateTimerDisplay() {
+
+    const display =
+        document.getElementById(
+            "timerDisplay"
+        );
+
+
+    if (!display) {
+        return;
+    }
+
 
     const minutes =
         Math.floor(
@@ -1704,23 +560,30 @@ function updateTimerDisplay() {
         timerSeconds % 60;
 
 
-    const display =
-        document.getElementById(
-            "timerDisplay"
-        );
-
-
-    if (!display) return;
-
-
     display.textContent =
         `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
 
+// ======================================================
+// ▶ START TIMER
+// ======================================================
+
 function startTimer() {
 
-    if (timerInterval) return;
+    if (timerInterval) {
+        return;
+    }
+
+
+    if (!currentStudyTarget) {
+
+        alert(
+            "Please select a Study Target first."
+        );
+
+        return;
+    }
 
 
     const status =
@@ -1729,40 +592,43 @@ function startTimer() {
         );
 
 
-    status.textContent =
-        "🔥 Focus mode started!";
+    if (status) {
+        status.textContent =
+            "📖 Study session running...";
+    }
 
 
     timerInterval =
-        setInterval(() => {
-
-            if (timerSeconds > 0) {
-
-                timerSeconds--;
-
-                updateTimerDisplay();
-
-            } else {
-
-                clearInterval(
-                    timerInterval
-                );
-
-                timerInterval = null;
-
-
-                status.textContent =
-                    "🎉 Study session complete!";
-
-                alert(
-                    "Great job! Your 25-minute study session is complete."
-                );
-
-            }
-
-        }, 1000);
+        setInterval(
+            runTimer,
+            1000
+        );
 }
 
+
+// ======================================================
+// ⏳ TIMER RUN
+// ======================================================
+
+function runTimer() {
+
+    if (timerSeconds <= 0) {
+
+        completeStudySession();
+
+        return;
+    }
+
+
+    timerSeconds--;
+
+    updateTimerDisplay();
+}
+
+
+// ======================================================
+// ⏸ PAUSE TIMER
+// ======================================================
 
 function pauseTimer() {
 
@@ -1773,404 +639,1341 @@ function pauseTimer() {
         );
 
         timerInterval = null;
+    }
 
 
+    const status =
         document.getElementById(
             "timerStatus"
-        ).textContent =
-            "⏸ Timer paused";
+        );
+
+
+    if (status) {
+
+        status.textContent =
+            "⏸ Study session paused";
 
     }
 }
 
 
+// ======================================================
+// 🔄 RESET TIMER
+// ======================================================
+
 function resetTimer() {
 
-    clearInterval(
-        timerInterval
-    );
+    if (timerInterval) {
+
+        clearInterval(
+            timerInterval
+        );
+
+        timerInterval = null;
+    }
 
 
-    timerInterval = null;
+    if (currentStudyTarget) {
 
-    timerSeconds =
-        25 * 60;
+        timerSeconds =
+            currentStudyTarget.duration * 60;
+
+    } else {
+
+        timerSeconds = 0;
+
+    }
 
 
     updateTimerDisplay();
 
 
-    document.getElementById(
-        "timerStatus"
-    ).textContent =
-        "Ready to study";
-}
-
-
-/* =========================================
-   RESET ACADEMIC DATA
-========================================= */
-
-function resetApp() {
-
-    const confirmed =
-        confirm(
-            "Reset your marks and performance data?"
+    const status =
+        document.getElementById(
+            "timerStatus"
         );
 
 
-    if (!confirmed) return;
+    if (status) {
+
+        status.textContent =
+            "Ready to study";
+
+    }
+}
+
+// ======================================================
+// 📊 STUDY SESSION COMPLETION
+// ======================================================
+
+function completeStudySession() {
+
+    if (timerInterval) {
+
+        clearInterval(
+            timerInterval
+        );
+
+        timerInterval = null;
+    }
 
 
-    document.getElementById(
-        "studentName"
-    ).value = "";
+    timerSeconds = 0;
+
+    updateTimerDisplay();
 
 
-    subjectIds.forEach(id => {
+    if (!currentStudyTarget) {
+        return;
+    }
 
+
+    const target =
+        studyTargets.find(
+            item =>
+                item.id === currentStudyTarget.id
+        );
+
+
+    if (target) {
+
+        target.status =
+            "Completed";
+
+
+        target.completedAt =
+            new Date().toISOString();
+
+    }
+
+
+    saveStudyTargets();
+
+    loadStudyTargets();
+
+
+    const status =
         document.getElementById(
-            id
-        ).value = "";
-
-    });
+            "timerStatus"
+        );
 
 
-    document.getElementById(
-        "welcomeName"
-    ).textContent =
-        "Student";
+    if (status) {
 
+        status.textContent =
+            "🎉 Study session completed!";
 
-    document.getElementById(
-        "percentageValue"
-    ).textContent =
-        "0%";
-
-
-    document.getElementById(
-        "gradeValue"
-    ).textContent =
-        "-";
-
-
-    document.getElementById(
-        "totalValue"
-    ).textContent =
-        "0/400";
-
-
-    document.getElementById(
-        "weakSubjectValue"
-    ).textContent =
-        "-";
-
-
-    document.getElementById(
-        "subjectPerformance"
-    ).innerHTML = `
-
-        <div class="empty-state">
-
-            📊
-
-            <p>
-                Your performance will appear here.
-            </p>
-
-        </div>
-
-    `;
-
-
-    document.getElementById(
-        "marksChart"
-    ).innerHTML = "";
-
-
-    document.getElementById(
-        "targetPerformance"
-    ).innerHTML = "";
-
-
-    document.getElementById(
-        "studyPlan"
-    ).innerHTML = `
-
-        <div class="empty-state">
-
-            📅
-
-            <p>
-                Analyze your marks first
-                to generate your study plan.
-            </p>
-
-        </div>
-
-    `;
-
-
-    document.getElementById(
-        "dashboardSuggestion"
-    ).innerHTML = `
-
-        <div class="empty-state">
-
-            📚
-
-            <p>
-                Analyze your marks to receive
-                personalized study advice.
-            </p>
-
-        </div>
-
-    `;
-
-
-    localStorage.removeItem(
-        "studentData"
-    );
+    }
 
 
     alert(
-        "Academic data has been reset."
+        `Great job! Your ${currentStudyTarget.duration}-minute study session is complete.`
     );
 
 
-    showSection(
-        "performanceSection"
-    );
+    currentStudyTarget = null;
 }
 
 
-/* =========================================
-   SECURITY HELPER
-========================================= */
+// ======================================================
+// 👤 PROFILE
+// ======================================================
 
-function escapeHTML(value) {
+function loadProfile() {
 
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-/* =========================================
-   LOAD SAVED STUDENT DATA
-========================================= */
-
-function loadSavedData() {
-
-    const saved =
-        JSON.parse(
-            localStorage.getItem(
-                "studentData"
-            )
+    const studentData =
+        localStorage.getItem(
+            "studentUser"
         );
 
 
-    if (!saved) return;
+    if (!studentData) {
+        return;
+    }
 
 
-    document.getElementById(
-        "studentName"
-    ).value =
-        saved.name || "";
+    try {
+
+        const student =
+            JSON.parse(studentData);
 
 
-    document.getElementById(
-        "math"
-    ).value =
-        saved.marks.math;
+        const nameInput =
+            document.getElementById(
+                "profileName"
+            );
 
 
-    document.getElementById(
-        "python"
-    ).value =
-        saved.marks.python;
+        const emailInput =
+            document.getElementById(
+                "profileEmail"
+            );
 
 
-    document.getElementById(
-        "dsa"
-    ).value =
-        saved.marks.dsa;
+        if (nameInput && student.name) {
+            nameInput.value =
+                student.name;
+        }
 
 
-    document.getElementById(
-        "physics"
-    ).value =
-        saved.marks.physics;
+        if (emailInput && student.email) {
+            emailInput.value =
+                student.email;
+        }
 
+    } catch (error) {
 
-    /* Rebuild dashboard without
-       creating duplicate history */
+        console.error(
+            "Profile loading error:",
+            error
+        );
 
-    calculateResult(false);
+    }
 }
 
 
-/* =========================================
-   KEYBOARD SUPPORT
-========================================= */
+// ======================================================
+// 🌙 THEME
+// ======================================================
 
-document.addEventListener(
-    "keydown",
-    function (event) {
+function loadTheme() {
 
-        /* Ctrl + Enter = Analyze */
+    const savedTheme =
+        localStorage.getItem(
+            "theme"
+        );
 
-        if (
-            event.ctrlKey &&
-            event.key === "Enter"
-        ) {
 
-            calculateResult();
+    if (savedTheme === "dark") {
+
+        document.body.classList.add(
+            "dark-theme"
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// 🌓 TOGGLE THEME
+// ======================================================
+
+function toggleTheme() {
+
+    document.body.classList.toggle(
+        "dark-theme"
+    );
+
+
+    const darkMode =
+        document.body.classList.contains(
+            "dark-theme"
+        );
+
+
+    localStorage.setItem(
+        "theme",
+        darkMode
+            ? "dark"
+            : "light"
+    );
+}
+
+
+// ======================================================
+// 📚 LIBRARY RESOURCES
+// ======================================================
+
+let libraryResources = [];
+
+
+// ======================================================
+// 📚 LOAD LIBRARY FROM DJANGO
+// ======================================================
+
+async function loadLibraryFromAPI() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${LIBRARY_API_BASE_URL}/api/library/`
+            );
+
+
+        if (!response.ok) {
+            throw new Error(
+                "Library API error"
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (Array.isArray(data)) {
+
+            libraryResources =
+                data.map(item => ({
+
+                    id:
+                        item.id,
+
+                    title:
+                        item.title,
+
+                    category:
+                        item.category,
+
+                    level:
+                        item.level,
+
+                    description:
+                        item.description,
+
+                    file:
+                        item.file
+
+                }));
+
+
+            displayLibraryResources(
+                libraryResources
+            );
+
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Django library unavailable:",
+            error
+        );
+
+    }
+}
+
+
+// ======================================================
+// 📚 DISPLAY LIBRARY
+// ======================================================
+
+function displayLibraryResources(
+    resources = libraryResources
+) {
+
+    const container =
+        document.getElementById(
+            "libraryResources"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    if (!resources.length) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                📚
+                <p>
+                    No programming resources found.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        resources.map(resource => `
+
+        <div class="library-card">
+
+            <div class="library-card-icon">
+                📘
+            </div>
+
+            <div class="library-card-content">
+
+                <h3>
+                    ${escapeHTML(resource.title)}
+                </h3>
+
+                <p>
+                    ${escapeHTML(
+                        resource.description || ""
+                    )}
+                </p>
+
+                <div class="library-meta">
+
+                    <span>
+                        ${escapeHTML(
+                            resource.category || ""
+                        )}
+                    </span>
+
+                    <span>
+                        ${escapeHTML(
+                            resource.level || ""
+                        )}
+                    </span>
+
+                </div>
+
+
+                ${
+                    resource.file
+                    ?
+                    `
+                    <button
+                        class="primary-button"
+                        onclick="openLibraryPDF('${escapeHTML(resource.file)}')"
+                    >
+                        📖 Open Notes
+                    </button>
+                    `
+                    :
+                    ""
+                }
+
+            </div>
+
+        </div>
+
+    `).join("");
+}
+
+
+// ======================================================
+// 📖 OPEN LIBRARY PDF
+// ======================================================
+
+function openLibraryPDF(filePath) {
+
+    if (!filePath) {
+
+        alert(
+            "PDF file is not available."
+        );
+
+        return;
+    }
+
+
+    let url =
+        filePath;
+
+
+    if (
+        filePath.startsWith("/")
+    ) {
+
+        url =
+            `${LIBRARY_API_BASE_URL}${filePath}`;
+
+    }
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+}
+
+
+// ======================================================
+// 🔎 LIBRARY SEARCH
+// ======================================================
+
+function searchLibrary() {
+
+    const searchInput =
+        document.getElementById(
+            "librarySearch"
+        );
+
+
+    if (!searchInput) {
+        return;
+    }
+
+
+    const searchText =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!searchText) {
+
+        displayLibraryResources(
+            libraryResources
+        );
+
+        return;
+    }
+
+
+    const filtered =
+        libraryResources.filter(
+            resource => {
+
+                const title =
+                    String(
+                        resource.title || ""
+                    ).toLowerCase();
+
+
+                const category =
+                    String(
+                        resource.category || ""
+                    ).toLowerCase();
+
+
+                const description =
+                    String(
+                        resource.description || ""
+                    ).toLowerCase();
+
+
+                return (
+                    title.includes(searchText) ||
+                    category.includes(searchText) ||
+                    description.includes(searchText)
+                );
+
+            }
+        );
+
+
+    displayLibraryResources(
+        filtered
+    );
+}
+
+
+// ======================================================
+// 🏷️ LIBRARY CATEGORY FILTER
+// ======================================================
+
+function filterLibraryCategory(
+    category
+) {
+
+    if (
+        !category ||
+        category === "All"
+    ) {
+
+        displayLibraryResources(
+            libraryResources
+        );
+
+        return;
+    }
+
+
+    const filtered =
+        libraryResources.filter(
+            resource =>
+
+                String(
+                    resource.category || ""
+                ).toLowerCase()
+                ===
+                String(
+                    category
+                ).toLowerCase()
+        );
+
+
+    displayLibraryResources(
+        filtered
+    );
+}
+
+
+// ======================================================
+// 🎚️ LIBRARY LEVEL FILTER
+// ======================================================
+
+function filterLibraryLevel(
+    level
+) {
+
+    if (
+        !level ||
+        level === "All"
+    ) {
+
+        displayLibraryResources(
+            libraryResources
+        );
+
+        return;
+    }
+
+
+    const filtered =
+        libraryResources.filter(
+            resource =>
+
+                String(
+                    resource.level || ""
+                ).toLowerCase()
+                ===
+                String(
+                    level
+                ).toLowerCase()
+        );
+
+
+    displayLibraryResources(
+        filtered
+    );
+}
+
+
+// ======================================================
+// 📚 INITIALIZE LIBRARY
+// ======================================================
+
+function initializeLibrary() {
+
+    const searchInput =
+        document.getElementById(
+            "librarySearch"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            searchLibrary
+        );
+
+    }
+
+
+    loadLibraryFromAPI();
+}
+
+
+// ======================================================
+// ⬆️ LIBRARY PDF UPLOAD
+// ======================================================
+
+async function uploadLibraryPDF() {
+
+    const fileInput =
+        document.getElementById(
+            "libraryFile"
+        );
+
+
+    if (!fileInput || !fileInput.files.length) {
+
+        alert(
+            "Please select a PDF file."
+        );
+
+        return;
+    }
+
+
+    const file =
+        fileInput.files[0];
+
+
+    if (
+        file.type !==
+        "application/pdf"
+    ) {
+
+        alert(
+            "Only PDF files are allowed."
+        );
+
+        return;
+    }
+
+
+    if (
+        file.size >
+        10 * 1024 * 1024
+    ) {
+
+        alert(
+            "PDF size must be less than 10 MB."
+        );
+
+        return;
+    }
+
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "file",
+        file
+    );
+
+
+    const titleInput =
+        document.getElementById(
+            "libraryTitle"
+        );
+
+
+    const categoryInput =
+        document.getElementById(
+            "libraryCategory"
+        );
+
+
+    const levelInput =
+        document.getElementById(
+            "libraryLevel"
+        );
+
+
+    const descriptionInput =
+        document.getElementById(
+            "libraryDescription"
+        );
+
+
+    if (titleInput) {
+
+        formData.append(
+            "title",
+            titleInput.value.trim()
+        );
+
+    }
+
+
+    if (categoryInput) {
+
+        formData.append(
+            "category",
+            categoryInput.value
+        );
+
+    }
+
+
+    if (levelInput) {
+
+        formData.append(
+            "level",
+            levelInput.value
+        );
+
+    }
+
+
+    if (descriptionInput) {
+
+        formData.append(
+            "description",
+            descriptionInput.value.trim()
+        );
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${LIBRARY_API_BASE_URL}/api/library/upload/`,
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Upload failed"
+            );
 
         }
 
 
-        /* Enter inside task input */
+        alert(
+            "PDF uploaded successfully!"
+        );
 
-        const taskInput =
-            document.getElementById(
-                "taskInput"
-            );
 
+        if (fileInput) {
+            fileInput.value = "";
+        }
+
+
+        await loadLibraryFromAPI();
+
+
+    } catch (error) {
+
+        console.error(
+            "PDF upload error:",
+            error
+        );
+
+
+        alert(
+            "PDF upload failed. Please make sure Django server is running."
+        );
+
+    }
+}
+
+
+// ======================================================
+// 💾 SAVE BASIC APP DATA
+// ======================================================
+
+function loadSavedData() {
+
+    loadStudyTargets();
+
+    loadLoggedInStudent();
+
+    loadProfile();
+}
+
+
+// ======================================================
+// ⌨️ KEYBOARD SUPPORT
+// ======================================================
+
+document.addEventListener(
+    "keydown",
+    function(event) {
 
         if (
-            event.key === "Enter" &&
-            document.activeElement === taskInput
+            event.key === "Escape" &&
+            timerInterval
         ) {
 
-            addTask();
+            pauseTimer();
 
         }
 
     }
 );
 
-
-/* =========================================
-   INITIALIZE APP
-========================================= */
+// ======================================================
+// 🚀 PAGE INITIALIZATION
+// ======================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
+        // Theme
         loadTheme();
 
+
+        // Student information
+        loadLoggedInStudent();
+
+
+        // Profile
         loadProfile();
 
-        loadTasks();
 
-        loadAttendance();
+        // Study targets
+        loadStudyTargets();
 
-        loadHistory();
 
-        loadSavedData();
-
+        // Timer
         updateTimerDisplay();
 
-        // V6
-        loadLoggedInStudent();
+
+        // Library
+        initializeLibrary();
 
     }
 );
 
-// ======================================================
-// 🔐 V6 LOGIN PROTECTION
-// ======================================================
-
-const currentPage = window.location.pathname;
-
-if (
-    !currentPage.endsWith("login.html") &&
-    !currentPage.endsWith("signup.html")
-) {
-    const loggedIn =
-        localStorage.getItem("studentLoggedIn");
-
-    if (loggedIn !== "true") {
-        window.location.href = "login.html";
-    }
-}
-
 
 // ======================================================
-// 🚪 LOGOUT
+// 📅 SET TODAY AS DEFAULT DATE
 // ======================================================
 
-function logoutUser() {
+function setDefaultStudyDate() {
 
-    const confirmLogout = confirm(
-        "Are you sure you want to logout?"
-    );
-
-    if (!confirmLogout) {
-        return;
-    }
-
-    // Login session remove
-    localStorage.removeItem("studentLoggedIn");
-
-    // Current session student remove
-    localStorage.removeItem("currentStudent");
-
-    // studentUser ko remove nahi karna
-    // taaki user dobara login kar sake
-
-    window.location.href = "login.html";
-}
-
-
-// ======================================================
-// 👤 LOAD LOGGED-IN STUDENT NAME
-// ======================================================
-
-function loadLoggedInStudent() {
-
-    const currentStudent =
-        JSON.parse(
-            localStorage.getItem("currentStudent")
+    const dateInput =
+        document.getElementById(
+            "studyDate"
         );
 
-    if (!currentStudent) {
+
+    if (!dateInput) {
         return;
     }
 
 
-    // Dashboard welcome name
-    const welcomeName =
-        document.getElementById("welcomeName");
+    if (!dateInput.value) {
 
-    if (welcomeName) {
-        welcomeName.textContent =
-            currentStudent.name;
-    }
+        const today =
+            new Date();
 
 
-    // Profile name
-    const profileName =
-        document.getElementById("profileName");
-
-    if (profileName) {
-        profileName.value =
-            currentStudent.name;
-    }
+        const year =
+            today.getFullYear();
 
 
-    // Profile email
-    const profileEmail =
-        document.getElementById("profileEmail");
+        const month =
+            String(
+                today.getMonth() + 1
+            ).padStart(2, "0");
 
-    if (profileEmail) {
-        profileEmail.value =
-            currentStudent.email;
+
+        const day =
+            String(
+                today.getDate()
+            ).padStart(2, "0");
+
+
+        dateInput.value =
+            `${year}-${month}-${day}`;
     }
 }
+
+
+// ======================================================
+// 📚 ADD SUBJECT OPTIONS
+// ======================================================
+
+function loadSubjectOptions() {
+
+    const select =
+        document.getElementById(
+            "studySubject"
+        );
+
+
+    if (!select) {
+        return;
+    }
+
+
+    // Don't add again
+    if (select.options.length > 1) {
+        return;
+    }
+
+
+    subjects.forEach(
+        subject => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                subject;
+
+
+            option.textContent =
+                subject;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+}
+
+
+// ======================================================
+// 📅 PLANNER INITIALIZATION
+// ======================================================
+
+function initializePlanner() {
+
+    loadSubjectOptions();
+
+    setDefaultStudyDate();
+
+    loadStudyTargets();
+
+    updateTimerDisplay();
+}
+
+
+// ======================================================
+// 🔄 REFRESH STUDY TARGETS
+// ======================================================
+
+function refreshStudyPlanner() {
+
+    loadStudyTargets();
+
+    updateTimerDisplay();
+}
+
+
+// ======================================================
+// 🧹 CLEAR COMPLETED TARGETS
+// ======================================================
+
+function clearCompletedTargets() {
+
+    const completed =
+        studyTargets.filter(
+            target =>
+                target.status ===
+                "Completed"
+        );
+
+
+    if (!completed.length) {
+
+        alert(
+            "There are no completed study targets."
+        );
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "Clear all completed study targets?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    studyTargets =
+        studyTargets.filter(
+            target =>
+                target.status !==
+                "Completed"
+        );
+
+
+    saveStudyTargets();
+
+    loadStudyTargets();
+}
+
+
+// ======================================================
+// 🕒 FORMAT DATE
+// ======================================================
+
+function formatStudyDate(dateValue) {
+
+    if (!dateValue) {
+        return "";
+    }
+
+
+    const date =
+        new Date(
+            dateValue + "T00:00:00"
+        );
+
+
+    return date.toLocaleDateString(
+        "en-IN",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    );
+}
+
+
+// ======================================================
+// 🕒 FORMAT TIME
+// ======================================================
+
+function formatStudyTime(timeValue) {
+
+    if (!timeValue) {
+        return "";
+    }
+
+
+    const parts =
+        timeValue.split(":");
+
+
+    const hour =
+        Number(parts[0]);
+
+
+    const minute =
+        parts[1];
+
+
+    const suffix =
+        hour >= 12
+            ? "PM"
+            : "AM";
+
+
+    const displayHour =
+        hour % 12 || 12;
+
+
+    return `${displayHour}:${minute} ${suffix}`;
+}
+
+
+// ======================================================
+// 📊 STUDY STATISTICS
+// ======================================================
+
+function getStudyStatistics() {
+
+    const completed =
+        studyTargets.filter(
+            target =>
+                target.status ===
+                "Completed"
+        );
+
+
+    const totalMinutes =
+        completed.reduce(
+            (total, target) =>
+                total +
+                Number(
+                    target.duration || 0
+                ),
+            0
+        );
+
+
+    const totalSessions =
+        completed.length;
+
+
+    return {
+        totalMinutes,
+        totalSessions
+    };
+}
+
+
+// ======================================================
+// 🏠 UPDATE DASHBOARD STUDY TIME
+// ======================================================
+
+function updateDashboardStudyStats() {
+
+    const stats =
+        getStudyStatistics();
+
+
+    const studyTime =
+        document.getElementById(
+            "studyTime"
+        );
+
+
+    if (studyTime) {
+
+        if (
+            stats.totalMinutes >=
+            60
+        ) {
+
+            const hours =
+                Math.floor(
+                    stats.totalMinutes / 60
+                );
+
+
+            const minutes =
+                stats.totalMinutes % 60;
+
+
+            studyTime.textContent =
+                `${hours}h ${minutes}m`;
+
+        } else {
+
+            studyTime.textContent =
+                `${stats.totalMinutes}m`;
+
+        }
+
+    }
+
+
+    const completedCount =
+        document.getElementById(
+            "completedStudySessions"
+        );
+
+
+    if (completedCount) {
+
+        completedCount.textContent =
+            stats.totalSessions;
+
+    }
+}
+
+
+// ======================================================
+// 🔄 UPDATE DASHBOARD AFTER SESSION
+// ======================================================
+
+function updateAfterStudySession() {
+
+    updateDashboardStudyStats();
+
+    loadStudyTargets();
+
+    updateTimerDisplay();
+}
+
+
+// ======================================================
+// 🛠️ REPLACE COMPLETE SESSION
+// ======================================================
+
+const originalCompleteStudySession =
+    completeStudySession;
+
+
+completeStudySession =
+    function () {
+
+        originalCompleteStudySession();
+
+        updateAfterStudySession();
+
+    };
+
+
+// ======================================================
+// 🚀 FINAL PLANNER STARTUP
+// ======================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        initializePlanner();
+
+        updateDashboardStudyStats();
+
+    }
+);
+
+
+// ======================================================
+// 🖱️ GLOBAL CLICK SUPPORT
+// ======================================================
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        const target =
+            event.target;
+
+
+        // Theme button
+        if (
+            target.id ===
+            "themeButton"
+        ) {
+
+            toggleTheme();
+
+        }
+
+    }
+);
+
+
+// ======================================================
+// ⏰ AUTO CHECK CURRENT TARGET
+// ======================================================
+
+setInterval(
+    function () {
+
+        if (!studyTargets.length) {
+            return;
+        }
+
+
+        const now =
+            new Date();
+
+
+        const currentDate =
+            now.toISOString()
+                .split("T")[0];
+
+
+        const currentTime =
+            `${String(
+                now.getHours()
+            ).padStart(2, "0")}:${String(
+                now.getMinutes()
+            ).padStart(2, "0")}`;
+
+
+        studyTargets.forEach(
+            target => {
+
+                if (
+                    target.status ===
+                    "Pending" &&
+                    target.date ===
+                    currentDate &&
+                    target.time ===
+                    currentTime
+                ) {
+
+                    console.log(
+                        `Study target started: ${target.subject} - ${target.topic}`
+                    );
+
+                }
+
+            }
+        );
+
+    },
+    60000
+);
